@@ -53,7 +53,7 @@ public class ScanDirTask extends Thread {
             final DirInfo dirInfo = DirHelper.countFileTypes(dir);
             DirHelper.hasInnerFolder(dir);
 
-            if (DirHelper.doesNotContainRelease(dirInfo)) {
+            if (DirHelper.releaseIsPresent(dirInfo)) {
                 for (int i = 0; i < processedDirectoryList.size(); i++) {
                     if (processedDirectoryList.get(i).compareTo(dir) == 0) {
                         processedDirectoryList.remove(i);
@@ -63,7 +63,7 @@ public class ScanDirTask extends Thread {
 
             int cdParentFolderCount = DirHelper.getCDFoldersCount(dir);
 
-            if (DirHelper.containsJustInnerFolders(dirInfo)) {
+            if (DirHelper.innerFoldersArePresent(dirInfo)) {
                 for (int i = 0; i < processedDirectoryList.size(); i++) {
                     if (processedDirectoryList.get(i).compareTo(dir) == 0) {
                         processedDirectoryList.remove(i);

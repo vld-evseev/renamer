@@ -120,12 +120,12 @@ public class DirHelper {
         return folderList.size() > 1;
     }
 
-    public  static boolean doesNotContainRelease(DirInfo dirInfo) {
+    public  static boolean releaseIsPresent(DirInfo dirInfo) {
         final File dir = dirInfo.getDir();
         return !dirInfo.hasAudio() && DirHelper.getCDFoldersCount(dir) == 0 && !hasInnerFolder(dir);
     }
 
-    public static boolean containsJustInnerFolders(DirInfo dirInfo) {
+    public static boolean innerFoldersArePresent(DirInfo dirInfo) {
         final File dir = dirInfo.getDir();
         return !dirInfo.hasAudio() && DirHelper.getCDFoldersCount(dir) == 0 && hasInnerFolder(dir);
     }
