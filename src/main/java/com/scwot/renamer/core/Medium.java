@@ -13,7 +13,7 @@ public class Medium {
     private final String VA_VALUE = "Various Artists";
 
     private FileLevelProperties properties;
-    private ObservableList<Audio> audioList;
+    private ObservableList<Mp3FileWrapper> audioList;
     private final SimpleIntegerProperty discNumber;
     private final SimpleStringProperty album;
     private final SimpleStringProperty artist;
@@ -113,9 +113,9 @@ public class Medium {
     }
 
     private void sortByTrackNumbers() {
-        audioList.sort(new Comparator<Audio>() {
+        audioList.sort(new Comparator<Mp3FileWrapper>() {
             @Override
-            public int compare(Audio curr, Audio next) {
+            public int compare(Mp3FileWrapper curr, Mp3FileWrapper next) {
                 if (curr.getTrack() > next.getTrack()) {
                     return 1;
                 } else if (curr.getTrack() < next.getTrack()) {
@@ -136,11 +136,11 @@ public class Medium {
         return element;
     }
 
-    public ObservableList<Audio> getAudioList() {
+    public ObservableList<Mp3FileWrapper> getAudioList() {
         return audioList;
     }
 
-    public void setAudioList(ObservableList<Audio> audioList) {
+    public void setAudioList(ObservableList<Mp3FileWrapper> audioList) {
         this.audioList = audioList;
     }
 

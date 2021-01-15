@@ -14,7 +14,7 @@ public class FileLevelProperties {
     private ObservableList<FileLevelProperties> childs;
 
     private ObservableList<File> listOfInnerFolders;
-    private ObservableList<Audio> listOfAudios;
+    private ObservableList<Mp3FileWrapper> listOfAudios;
     private ObservableList<File> listOfImages;
     private ObservableList<File> listOfOthers;
 
@@ -42,7 +42,7 @@ public class FileLevelProperties {
         dirName.setValue(inputDir.getName());
     }
 
-    public void addAudio(Audio audio) {
+    public void addAudio(Mp3FileWrapper audio) {
         listOfAudios.add(audio);
     }
 
@@ -83,7 +83,7 @@ public class FileLevelProperties {
         this.listOfInnerFolders = listOfInnerFolders;
     }
 
-    public ObservableList<Audio> getListOfAudios() {
+    public ObservableList<Mp3FileWrapper> getListOfAudios() {
         return listOfAudios;
     }
 
@@ -111,7 +111,7 @@ public class FileLevelProperties {
         return currentDir;
     }
 
-    public void setListOfAudios(ObservableList<Audio> listOfAudios) {
+    public void setListOfAudios(ObservableList<Mp3FileWrapper> listOfAudios) {
         this.listOfAudios = listOfAudios;
     }
 

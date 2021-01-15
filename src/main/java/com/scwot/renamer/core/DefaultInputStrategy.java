@@ -78,9 +78,9 @@ public class DefaultInputStrategy implements InputStrategy {
                     for (File f : list) {
                         if (!f.isDirectory()) {
                             if (FileHelper.isAudioFile(f)) {
-                                Audio audio = determineAudio(f);
+                                Mp3FileWrapper audio = new Mp3FileWrapper();
+                                audio.read(f);
                                 audio.setTrackCount(++trackCount);
-                                audio.initialize();
                                 currentEntry.addAudio(audio);
                             } else if (FileHelper.isImageFile(f)) {
                                 currentEntry.addImage(f);
@@ -112,16 +112,6 @@ public class DefaultInputStrategy implements InputStrategy {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private Audio determineAudio(File file) {
-        Audio audio;
-        if (FileHelper.isMP3(file))
-            audio = new Mp3AudioImpl(file);
-        else {
-            audio = new Mp3AudioImpl(file);
-        }
-        return audio;
     }
 
     private void addMedium(FileLevelProperties properties) {

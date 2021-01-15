@@ -65,7 +65,7 @@ public class DefaultExportStrategy implements ExportStrategy {
 
     private void renameAudio(Medium medium) {
         File newFile;
-        ObservableList<Audio> renamedAudioList = FXCollections.observableArrayList();
+        ObservableList<Mp3FileWrapper> renamedAudioList = FXCollections.observableArrayList();
 
         for (int i = 0; i < medium.getAudioList().size(); i++) {
             AudioFile oldFile = medium.getAudioList().get(i).getAudioFile();
@@ -94,7 +94,9 @@ public class DefaultExportStrategy implements ExportStrategy {
                             + getExtension(oldFile.getFile().getName()));
                 }
 
-                renamedAudioList.add(new Mp3AudioImpl(newFile));
+                final Mp3FileWrapper audio = new Mp3FileWrapper();
+                audio.readAudio(newFile);
+                renamedAudioList.add(audio);
 
                 if (!oldFile.getFile().getName().equals(newFile.getName())) {
                     System.out.println("Renamed from \"" + oldFile.getFile().getName() + "\" to \"" + newFile.getName() + "\"");
@@ -193,8 +195,8 @@ public class DefaultExportStrategy implements ExportStrategy {
 
     private void organiseAudio(FileLevelProperties props, File dest) {
         if (!props.getListOfAudios().isEmpty()) {
-            for (Audio audio : props.getListOfAudios()) {
-                move(audio.getFile(), dest);
+            for (Mp3FileWrapper audio : props.getListOfAudios()) {
+                move(audio.getAudioFile().getFile(), dest);
             }
         }
     }

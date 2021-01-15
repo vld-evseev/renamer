@@ -30,7 +30,6 @@ public class DirHelper {
                 FileUtils.listFiles(dir, null, true);
 
         for (File file : list) {
-
             if (FileHelper.isAudioFile(file)) {
                 audioCount++;
             } else if (FileHelper.isImageFile(file)) {
