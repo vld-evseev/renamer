@@ -1,6 +1,7 @@
 package com.scwot.renamer.core;
 
 import com.scwot.renamer.core.utils.DirHelper;
+import com.scwot.renamer.core.utils.FileHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -76,12 +77,12 @@ public class DefaultInputStrategy implements InputStrategy {
                     System.out.println("-----> Curr dir: " + dir.toFile().toString());
                     for (File f : list) {
                         if (!f.isDirectory()) {
-                            if (DirHelper.isAudioFile(f)) {
+                            if (FileHelper.isAudioFile(f)) {
                                 Audio audio = determineAudio(f);
                                 audio.setTrackCount(++trackCount);
                                 audio.initialize();
                                 currentEntry.addAudio(audio);
-                            } else if (DirHelper.isImageFile(f)) {
+                            } else if (FileHelper.isImageFile(f)) {
                                 currentEntry.addImage(f);
                             } else {
                                 currentEntry.addOther(f);
@@ -115,7 +116,7 @@ public class DefaultInputStrategy implements InputStrategy {
 
     private Audio determineAudio(File file) {
         Audio audio;
-        if (DirHelper.isMP3(file))
+        if (FileHelper.isMP3(file))
             audio = new Mp3AudioImpl(file);
         else {
             audio = new Mp3AudioImpl(file);

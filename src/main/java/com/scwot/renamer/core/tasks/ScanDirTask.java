@@ -1,6 +1,7 @@
 package com.scwot.renamer.core.tasks;
 
 import com.scwot.renamer.core.utils.DirHelper;
+import com.scwot.renamer.core.utils.DirInfo;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -49,12 +50,10 @@ public class ScanDirTask extends Thread {
             }
 
         } else {
-            DirHelper helper = new DirHelper();
-            helper.hasInnerFolder(dir);
-            helper.countFileTypes(dir);
-            helper.hasAudio();
+            final DirInfo dirInfo = DirHelper.countFileTypes(dir);
+            DirHelper.hasInnerFolder(dir);
 
-            if (helper.doesNotContainRelease(dir)) {
+            if (DirHelper.doesNotContainRelease(dirInfo)) {
                 for (int i = 0; i < processedDirectoryList.size(); i++) {
                     if (processedDirectoryList.get(i).compareTo(dir) == 0) {
                         processedDirectoryList.remove(i);
@@ -64,7 +63,7 @@ public class ScanDirTask extends Thread {
 
             int cdParentFolderCount = DirHelper.getCDFoldersCount(dir);
 
-            if (helper.containsJustInnerFolders(dir)) {
+            if (DirHelper.containsJustInnerFolders(dirInfo)) {
                 for (int i = 0; i < processedDirectoryList.size(); i++) {
                     if (processedDirectoryList.get(i).compareTo(dir) == 0) {
                         processedDirectoryList.remove(i);
@@ -73,7 +72,7 @@ public class ScanDirTask extends Thread {
                 }
             }
 
-            if (helper.hasAudio()
+            if (dirInfo.hasAudio()
                     && cdSubfoldersCount == 0
                     && cdParentFolderCount > 0) {
                 for (int i = 0; i < processedDirectoryList.size(); i++) {
