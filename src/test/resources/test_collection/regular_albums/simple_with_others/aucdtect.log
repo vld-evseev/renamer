@@ -1,0 +1,102 @@
+
+d:\>d:\aucdtect -d/-m0 d:\zzz\*.wav 
+auCDtect: CD records authenticity detector, version 0.8.2
+Copyright (c) 2004 Oleg Berngardt. All rights reserved.
+Copyright (c) 2004 Alexander Djourik. All rights reserved.
+------------------------------------------------------------
+Processing file:	[01. La Macchina Universale .wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[01. Sleepwalker.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[02. The Devil In Kate Moss Part II - Exorcism.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[02. The Shadow, Our Home.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[03. Hidden Channels Of The Mind.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[03. The Stain.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[04. Breakfast With The Lobster.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 99%
+
+------------------------------------------------------------
+Processing file:	[04. The Devil In Kate Moss.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[05. Ceremony.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[05. The Dead Will Walk The Earth.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[06. Origins.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[06. They Came To Me.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[07. Mean Affair.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[08. Mountain Tea Traders.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Processing file:	[09. Let The Oracle Speak.wav]
+
+------------------------------------------------------------
+This track looks like CDDA with probability 100%
+
+------------------------------------------------------------
+Final Conclusion:
+------------------------------------------------------------
+These tracks looks like CDDA with probability 100%
+
+
+d:\>del d:\zzz\*.wav 
