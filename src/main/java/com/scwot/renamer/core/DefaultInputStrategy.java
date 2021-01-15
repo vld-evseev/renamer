@@ -92,7 +92,7 @@ public class DefaultInputStrategy implements InputStrategy {
 
                     if (entryCount == 0) {
                         root = currentEntry;
-                        cdCount = DirHelper.getCDFoldersCount(dir.toFile());
+                        cdCount = DirHelper.countMultiDiskFolders(dir.toFile());
                     } else {
                         root.addChild(currentEntry);
                         if (cdNotProcessed == 0)

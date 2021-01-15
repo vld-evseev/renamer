@@ -33,7 +33,7 @@ public class ScanDirTask extends Thread {
     }
 
     private void removeUnwantedDirs(File dir) {
-        int cdSubfoldersCount = DirHelper.getCDFoldersCount(dir);
+        int cdSubfoldersCount = DirHelper.countMultiDiskFolders(dir);
 
         if (dir.getName().equals(MACOSX_FOLDER_NAME)) {
             if (dir.exists()) {
@@ -53,7 +53,7 @@ public class ScanDirTask extends Thread {
             final DirInfo dirInfo = DirHelper.countFileTypes(dir);
             DirHelper.hasInnerFolder(dir);
 
-            if (DirHelper.releaseIsPresent(dirInfo)) {
+            if (DirHelper.releaseNotPresent(dirInfo)) {
                 for (int i = 0; i < processedDirectoryList.size(); i++) {
                     if (processedDirectoryList.get(i).compareTo(dir) == 0) {
                         processedDirectoryList.remove(i);
@@ -61,9 +61,9 @@ public class ScanDirTask extends Thread {
                 }
             }
 
-            int cdParentFolderCount = DirHelper.getCDFoldersCount(dir);
+            int cdParentFolderCount = DirHelper.countMultiDiskFolders(dir);
 
-            if (DirHelper.innerFoldersArePresent(dirInfo)) {
+            if (DirHelper.containsJustInnerFolders(dirInfo)) {
                 for (int i = 0; i < processedDirectoryList.size(); i++) {
                     if (processedDirectoryList.get(i).compareTo(dir) == 0) {
                         processedDirectoryList.remove(i);

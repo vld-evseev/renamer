@@ -7,8 +7,6 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,13 +14,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.scwot.renamer.ResourceProvider.getRegularSimpleWithCovers;
+
 class FileHelperTest {
 
     private Collection<File> files;
 
     @BeforeEach
     public void setUp() throws IOException {
-        files = FileUtils.listFiles(getResourceDir().getFile(), TrueFileFilter.INSTANCE, FalseFileFilter.INSTANCE);
+        files = FileUtils.listFiles(getRegularSimpleWithCovers().getFile(), TrueFileFilter.INSTANCE, FalseFileFilter.INSTANCE);
     }
 
     @Test
@@ -52,7 +52,4 @@ class FileHelperTest {
         audioFiles.stream().map(FileHelper::isMP3).forEach(Assertions::assertTrue);
     }
 
-    private Resource getResourceDir() {
-        return new ClassPathResource("test_collection/regular_albums/simple");
-    }
 }

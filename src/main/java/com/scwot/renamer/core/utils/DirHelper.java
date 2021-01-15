@@ -1,7 +1,5 @@
 package com.scwot.renamer.core.utils;
 
-import com.scwot.renamer.core.utils.enums.AudioTypes;
-import com.scwot.renamer.core.utils.enums.ImageTypes;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
@@ -30,25 +27,18 @@ public class DirHelper {
         int othersCount = 0;
 
         LinkedList<File> list = (LinkedList<File>)
-                FileUtils.listFiles(dir, null, false);
+                FileUtils.listFiles(dir, null, true);
 
         for (File file : list) {
-            String mimeType = FileHelper.getMimeType(file);
 
-            for (AudioTypes audioType : AudioTypes.values()) {
-                if (audioType.toString().equals(mimeType)) {
-                    audioCount++;
-                }
-            }
-
-            for (ImageTypes imageType : ImageTypes.values()) {
-                if (imageType.toString().equals(mimeType)) {
-                    imagesCount++;
-                }
+            if (FileHelper.isAudioFile(file)) {
+                audioCount++;
+            } else if (FileHelper.isImageFile(file)) {
+                imagesCount++;
+            } else {
+                othersCount++;
             }
         }
-
-        othersCount = list.size() - audioCount - imagesCount;
 
         logger.debug(String.format("Count complete [%s]", dir.getAbsolutePath()));
         logger.debug(String.format("\taudio: %d", audioCount));
@@ -61,12 +51,12 @@ public class DirHelper {
     /*
        Count subfolders which represents separate CDs (CD1, CD2, etc.)
     */
-    public static int getCDFoldersCount(File dir) {
+    public static int countMultiDiskFolders(File dir) {
         int cdCount = 0;
 
         File[] directories = dir.listFiles((current, name) -> new File(current, name).isDirectory());
 
-        if (directories == null){
+        if (directories == null) {
             final String msg = "Sub-directories not present: " + dir.getAbsolutePath();
             logger.error(msg);
             throw new RuntimeException(msg);
@@ -90,12 +80,12 @@ public class DirHelper {
 
     @SneakyThrows(IOException.class)
     public static void deleteDirectory(final File dir) {
-        if (!dir.isDirectory()){
+        if (!dir.isDirectory()) {
             return;
         }
 
         File[] directories = dir.listFiles();
-        if (directories == null){
+        if (directories == null) {
             final String msg = "Sub-directories not present: " + dir.getAbsolutePath();
             logger.error(msg);
             throw new RuntimeException(msg);
@@ -116,18 +106,18 @@ public class DirHelper {
         Collection<File> folderList = FileUtils.listFilesAndDirs(dir,
                 new NotFileFilter(TrueFileFilter.INSTANCE),
                 DirectoryFileFilter.DIRECTORY);
-        logger.info(String.format("Inner folders: %s", folderList.size()));
         return folderList.size() > 1;
     }
 
-    public  static boolean releaseIsPresent(DirInfo dirInfo) {
+    public static boolean releaseNotPresent(DirInfo dirInfo) {
         final File dir = dirInfo.getDir();
-        return !dirInfo.hasAudio() && DirHelper.getCDFoldersCount(dir) == 0 && !hasInnerFolder(dir);
+        return !dirInfo.hasAudio() && DirHelper.countMultiDiskFolders(dir) == 0 && !hasInnerFolder(dir);
     }
 
-    public static boolean innerFoldersArePresent(DirInfo dirInfo) {
+    //TODO: do I really need it?
+    public static boolean containsJustInnerFolders(DirInfo dirInfo) {
         final File dir = dirInfo.getDir();
-        return !dirInfo.hasAudio() && DirHelper.getCDFoldersCount(dir) == 0 && hasInnerFolder(dir);
+        return !dirInfo.hasAudio() && DirHelper.countMultiDiskFolders(dir) == 0 && hasInnerFolder(dir);
     }
 
 }
