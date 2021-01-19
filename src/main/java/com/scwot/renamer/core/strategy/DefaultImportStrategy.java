@@ -80,14 +80,16 @@ public class DefaultImportStrategy {
                         mediumScopeList.add(mediumScope);
                     }
 
-                    final List<DirectoryScope> relevantDirScopes = mediumScopeList.stream()
+                    /*final List<DirectoryScope> relevantDirScopes = mediumScopeList.stream()
                             .map(MediumScope::getDirectoryScope)
                             .filter(directoryScope -> directoryScope.isPartOf(currentDirScope))
                             .collect(Collectors.toList());
 
                     for (DirectoryScope relevantDirScope : relevantDirScopes) {
-                        relevantDirScope.addChild(currentDirScope);
-                    }
+                        if (!relevantDirScopes.contains(currentDirScope)){
+                            relevantDirScope.addChild(currentDirScope);
+                        }
+                    }*/
 
                     return FileVisitResult.CONTINUE;
                 }

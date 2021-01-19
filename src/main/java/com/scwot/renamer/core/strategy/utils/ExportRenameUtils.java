@@ -4,8 +4,7 @@ import com.scwot.renamer.core.scope.ReleaseScope;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -32,11 +31,15 @@ public class ExportRenameUtils {
         }
 
         if (StringUtils.isNotEmpty(artistCountry)) {
-            sb.append(artistCountry).append(" ");
+            sb.append(artistCountry);
+        }
+
+        if (StringUtils.isNotEmpty(artistCountry) && CollectionUtils.isNotEmpty(topArtistGenres)) {
+            sb.append(" ");
         }
 
         if (CollectionUtils.isNotEmpty(topArtistGenres)) {
-            final String joinedTopArtistGenres = String.join(", ", topArtistGenres);
+            final String joinedTopArtistGenres = resolveGenreSubstring(topArtistGenres);
             sb.append(joinedTopArtistGenres);
         }
 
@@ -45,6 +48,31 @@ public class ExportRenameUtils {
         }
 
         return sb.toString();
+    }
+
+    private static String resolveGenreSubstring(List<String> topArtistGenres) {
+        final Set<String> resolvedGenresList = new LinkedHashSet<>();
+        for (String toSearch : topArtistGenres) {
+            for (String artistGenre : topArtistGenres) {
+                if (resolvedGenresList.contains(artistGenre) || artistGenre.equals(toSearch)) {
+                    continue;
+                }
+
+                if (artistGenre.contains(toSearch) && !artistGenre.equals(toSearch)) {
+                    break;
+                } else {
+                    resolvedGenresList.add(toSearch);
+                    break;
+                }
+            }
+        }
+
+        if (resolvedGenresList.isEmpty()) {
+            resolvedGenresList.addAll(topArtistGenres);
+        }
+
+        final String joinedTopArtistGenres = String.join(", ", resolvedGenresList);
+        return joinedTopArtistGenres;
     }
 
     public static String buildAlbumDirName(ReleaseScope releaseScope) {
@@ -71,7 +99,7 @@ public class ExportRenameUtils {
             final String shortLabelSubstring = firstLabelSubstring
                     .replaceAll(" Records", EMPTY)
                     .replaceAll(" Recordings", EMPTY);
-            sb.append(shortLabelSubstring).append(", ");
+            sb.append(normalizeName(shortLabelSubstring)).append(", ");
         }
 
         final boolean withoutCatNum = releaseScope.getCatalogues().values().stream().anyMatch(s -> s.equals("[none]"));
@@ -80,7 +108,7 @@ public class ExportRenameUtils {
         } else {
             final List<String> catNumList = new ArrayList<>(releaseScope.getCatalogues().values());
             final String catNumListSubstring = catNumList.get(0);
-            sb.append(catNumListSubstring);
+            sb.append(normalizeName(catNumListSubstring));
         }
 
         sb.append("]");

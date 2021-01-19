@@ -63,7 +63,7 @@ public class MediumsToReleaseConverter {
         final String albumArtist = mergedAudioList.stream()
                 .flatMap(a -> Stream.of(a.getAlbumArtistTitle())).findFirst().orElse(String.join(" / ", artists));
         final String albumArtistSort = mergedAudioList.stream()
-                .flatMap(a -> Stream.of(a.getAlbumArtistSortTitle())).findFirst().orElse(resolveAlbumArtistSort(albumArtist));
+                .flatMap(a -> Stream.of(resolveAlbumArtistSort(albumArtist))).findFirst().orElse(albumArtist);
         final String albumTitle = mergedAudioList.stream()
                 .flatMap(a -> Stream.of(a.getAlbumTitle())).findFirst().orElse(Mp3FileScope.UNKNOWN_VALUE);
         final String releaseCountry = mergedAudioList.stream()

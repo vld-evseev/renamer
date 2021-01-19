@@ -63,6 +63,10 @@ public class DefaultExportStrategy {
                 organizeData(mediumScope.getDirectoryScope(), cdDirectory);
             } else {
                 organizeData(mediumScope.getDirectoryScope(), newAlbumDirectory);
+
+                for (DirectoryScope child : mediumScope.getDirectoryScope().getChildren()) {
+                    organizeData(child, newAlbumDirectory);
+                }
             }
         }
 
