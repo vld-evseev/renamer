@@ -1,13 +1,14 @@
 package com.scwot.renamer.core;
 
+import com.scwot.renamer.core.scope.MediumScope;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 
-public class RenameAlbumDirStrategy implements ExportStrategy {
+public class RenameAlbumDirStrategy {
 
-    private LocalRelease localRelease;
+    /*private LocalRelease localRelease;
     private String albumTitle;
     private String yearRecorded;
     private String yearReleased;
@@ -48,8 +49,8 @@ public class RenameAlbumDirStrategy implements ExportStrategy {
     private String buildAlbumString() {
         StringBuilder albumString = new StringBuilder();
 
-        for (Medium medium : localRelease.getMediums()) {
-            fillAlbumString(albumString, medium);
+        for (MediumScope mediumScope : localRelease.getMediums()) {
+            fillAlbumString(albumString, mediumScope);
             if (localRelease.getCdCount() > 0) {
                 albumString.append(" (").append(localRelease.getCdCount()).append("CD)");
                 break;
@@ -59,15 +60,15 @@ public class RenameAlbumDirStrategy implements ExportStrategy {
         return albumString.toString();
     }
 
-    private void fillAlbumString(StringBuilder albumString, Medium medium) {
-        /*if (localRelease.isVA()) {
+    private void fillAlbumString(StringBuilder albumString, MediumScope mediumScope) {
+        *//*if (localRelease.isVA()) {
             albumString.append("VA")
                     .append(" - ")
                     .append(validateName(medium.getAlbum()))
                     .append(" (")
                     .append(yearReleased)
                     .append(")");
-        } else {*/
+        } else {*//*
         albumString.append(yearRecorded)
                 .append(" - ")
                 .append(validateName(albumTitle));
@@ -101,7 +102,7 @@ public class RenameAlbumDirStrategy implements ExportStrategy {
     }
 
     private void fillOutputValues() {
-        /*MBParser mbParser = new MBParser(localRelease);
+        *//*MBParser mbParser = new MBParser(localRelease);
         try {
             if (mbParser.parseFromReleaseID()) {
                 yearReleased = mbParser.getReleaseYear();
@@ -114,7 +115,7 @@ public class RenameAlbumDirStrategy implements ExportStrategy {
             }
         } catch (MBWS2Exception e) {
             e.printStackTrace();
-        }*/
+        }*//*
 
         albumTitle = localRelease.getAlbumTitle();
 
@@ -150,5 +151,5 @@ public class RenameAlbumDirStrategy implements ExportStrategy {
                 .replaceAll(":", " -")
                 .replaceAll("\"", "")
                 .replaceAll("\\?", "");
-    }
+    }*/
 }

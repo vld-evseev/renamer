@@ -1,4 +1,4 @@
-package com.scwot.renamer.core;
+package com.scwot.renamer.core.scope;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -23,16 +23,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Slf4j
 @Data
-public class Mp3FileWrapper {
+public class Mp3FileScope {
 
     public static final String CUSTOM_FIELD = "TXXX";
     public static final String CATALOGNUMBER_TAG_NAME = "CATALOGNUMBER";
     public static final String ORIGINALYEAR_TAG_NAME = "originalyear";
-    public static final String ARTISTS_TAG_NAME = "Artists";
+    public static final String ARTISTS_TAG_NAME = "ARTISTS";
     public static final String MEDIATYPE_TAG_NAME = "MEDIATYPE";
     public static final String RELEASE_COUNTRY = "MusicBrainz Album Release Country";
     public static final String UNKNOWN_VALUE = "[unknown]";
@@ -84,7 +84,7 @@ public class Mp3FileWrapper {
         releaseGroupMBID = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASE_GROUP_ID, EMPTY);
         artistMBID = fromTag(audioFile, FieldKey.MUSICBRAINZ_ARTISTID, EMPTY);
         trackMBID = fromTag(audioFile, FieldKey.MUSICBRAINZ_TRACK_ID, EMPTY);
-        releaseCountry = fromCustomTag(audioFile, RELEASE_COUNTRY, EMPTY);
+        releaseCountry = fromCustomTag(audioFile, RELEASE_COUNTRY, EMPTY); //TODO: check if it works
         releaseStatus = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASE_STATUS, EMPTY);
         releaseType = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASE_TYPE, EMPTY);
         labels = Arrays.asList(splitString(fromTag(audioFile, FieldKey.RECORD_LABEL, EMPTY)));
@@ -92,8 +92,8 @@ public class Mp3FileWrapper {
         trackNumber = fromTag(audioFile, FieldKey.TRACK, String.valueOf(trackCount));
         format = fromCustomTag(audioFile, MEDIATYPE_TAG_NAME, EMPTY);
 
-        year = boundedFromTag(audioFile, FieldKey.YEAR, EMPTY);
-        origYear = origYearValue(audioFile, FieldKey.ORIGINAL_YEAR, EMPTY);
+        year = StringUtils.substring(boundedFromTag(audioFile, FieldKey.YEAR, EMPTY), 0, 4);
+        origYear = StringUtils.substring(origYearValue(audioFile, FieldKey.ORIGINAL_YEAR, EMPTY), 0, 4);
         discNumber = discNumberValue(audioFile);
         genres = listFromTag(audioFile, FieldKey.GENRE);
         artists = Arrays.asList(splitString(fromCustomTag(audioFile, ARTISTS_TAG_NAME, EMPTY)));
@@ -106,7 +106,7 @@ public class Mp3FileWrapper {
         image = artwork.getBinaryData();
     }
 
-    protected AudioFile readAudio(File file) {
+    public AudioFile readAudio(File file) {
         try {
             return AudioFileIO.read(file);
         } catch (Exception ex) {
@@ -241,7 +241,7 @@ public class Mp3FileWrapper {
 
     private static String fromTag(MP3File audioFile, FieldKey fieldKey, String defaultValue) {
         final String tagValue = fromAudio(audioFile, fieldKey);
-        if (!isEmpty(tagValue)) {
+        if (isNotEmpty(tagValue)) {
             return tagValue;
         }
 

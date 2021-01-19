@@ -27,7 +27,7 @@ public class DirHelper {
         int othersCount = 0;
 
         LinkedList<File> list = (LinkedList<File>)
-                FileUtils.listFiles(dir, null, true);
+                FileUtils.listFiles(dir, null, false);
 
         for (File file : list) {
             if (FileHelper.isAudioFile(file)) {
