@@ -78,8 +78,8 @@ public class MediumsToReleaseConverter {
                 .flatMap(a -> Stream.of(a.getReleaseGroupMBID())).findFirst().orElse(null);
         final String barcode = mergedAudioList.stream()
                 .flatMap(a -> Stream.of(a.getBarcode())).findFirst().orElse(null);
-        final byte[] image = mergedAudioList.stream()
-                .flatMap(a -> Stream.of(a.getImage())).findFirst().orElse(null);
+
+        byte[] firstImage = getFirstCoverIfPresent(mergedAudioList);
 
         final String yearReleased = Collections.max(years);
         final String yearRecorded = Collections.min(years);
@@ -102,7 +102,7 @@ public class MediumsToReleaseConverter {
                 .releaseMBID(releaseMBID)
                 .releaseGroupMBID(releaseGroupMBID)
                 .barcode(barcode)
-                .image(image)
+                .image(firstImage)
                 .yearReleased(yearReleased)
                 .yearRecorded(yearRecorded)
                 .totalDiskNumber(mediumScopeList.size())
@@ -112,6 +112,18 @@ public class MediumsToReleaseConverter {
                 .years(years)
                 .artistCountry(artistCountry)
                 .build();
+    }
+
+    private byte[] getFirstCoverIfPresent(List<Mp3FileScope> mergedAudioList) {
+        byte[] firstImage = null;
+        for (Mp3FileScope mp3FileScope : mergedAudioList) {
+            final byte[] image = mp3FileScope.getImage();
+            if (image != null){
+                firstImage = image;
+                break;
+            }
+        }
+        return firstImage;
     }
 
     private String resolveAlbumArtistSort(String albumArtist) {

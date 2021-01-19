@@ -67,7 +67,7 @@ public class DirectoryToMediumConverter {
 
         final boolean isVA = albumTitle.equalsIgnoreCase(VA_VALUE);
 
-        final File firstArtwork = directoryScope.getListOfImages().get(0);
+        final File firstArtwork = directoryScope.getListOfImages().stream().findFirst().orElse(null);
 
         sortByTrackNumbers(audioList);
 

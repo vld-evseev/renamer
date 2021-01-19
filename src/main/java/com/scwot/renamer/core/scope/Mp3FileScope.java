@@ -102,8 +102,11 @@ public class Mp3FileScope {
         barcode = fromTag(audioFile, FieldKey.BARCODE, EMPTY);
 
         final List<Artwork> artworkList = audioFile.getTag().getArtworkList();
-        final Artwork artwork = artworkList.stream().findFirst().get();
-        image = artwork.getBinaryData();
+        final Artwork artwork = artworkList.stream().findFirst().orElse(null);
+        if (artwork != null)
+        {
+            image = artwork.getBinaryData();
+        }
     }
 
     public AudioFile readAudio(File file) {

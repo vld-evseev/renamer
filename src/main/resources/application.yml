@@ -8,5 +8,5 @@ logging:
 
 
 app:
-  income: "D:\\music-test-dir\\!income"
-  destination: "D:\\music-test-dir\\!done"
+  input: "E:\\Music\\!incoming\\!renamer_testing_input"
+  destination: "E:\\Music\\!incoming\\!renamer_testing_output"
