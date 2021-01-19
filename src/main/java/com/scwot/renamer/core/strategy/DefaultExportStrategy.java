@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.audio.mp3.MP3File;
-import org.jaudiotagger.tag.images.Artwork;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.apache.commons.io.FilenameUtils.EXTENSION_SEPARATOR;
 import static org.apache.commons.io.FilenameUtils.getExtension;
@@ -29,30 +27,12 @@ public class DefaultExportStrategy {
 
     public static final String FOLDER_NAME = "folder";
     public static final String COVERS_NAME = "Covers";
-    private Artwork artwork;
-    private File destination;
-
-    private static final String VA_VALUE = "VA";
-    private static final String UNKNOWN_VALUE = "[unknown]";
-    private String outputCountryValue = "";
-    private String outputArtistGenresValue = "";
-    private String outputRecordGenresValue = "";
-    private String outputLabelValue = "";
-    private String outputCatNumValue = "";
-    private String outputArtistValue = "";
-    private String outputAlbumYearRecordedValue = "";
-    private String outputAlbumYearReleasedValue = "";
-    private String outputAlbumTypeValue = "";
 
     public void execute(ReleaseScope releaseScope, File destination, boolean includeInArtistFolder) {
         if (!destination.exists()) {
             log.info("Destination not exists");
             return;
         }
-
-        /*for (MediumScope mediumScope : releaseScope.getMediumScopeList()) {
-            renameAudio(mediumScope);
-        }*/
 
         final File newAlbumDirectory;
 
@@ -92,18 +72,6 @@ public class DefaultExportStrategy {
             batchOrganize(remaining, newAlbumDirectory);
             organizeData(releaseScope.getRoot(), newAlbumDirectory);
         }
-
-        /*final List<DirectoryScope> directoryScopeList = releaseScope.getMediumScopeList()
-                .stream()
-                .flatMap(mediumScope ->
-                        mediumScope.getDirectoryScope().getChildren().stream())
-                .collect(Collectors.toList());
-
-        final List<DirectoryScope> remainingDirs =
-                releaseScope.getMediumScopeList().stream().map(MediumScope::getDirectoryScope).collect(Collectors.toList());*/
-
-        //organizeData(releaseScope.getRoot(), destination);
-        //batchOrganize(remainingDirs, destination);
     }
 
     private void batchOrganize(List<DirectoryScope> dirScopeList, File dest) {
@@ -192,7 +160,6 @@ public class DefaultExportStrategy {
         final List<File> remainingImages =
                 listOfImages.stream().filter(file -> !file.getName().equalsIgnoreCase(oldFolderImage.getName())).collect(Collectors.toList());
         moveToCoversDir(dest, remainingImages);
-        //oldFolderImage.renameTo(newFolderImage);
     }
 
     private void moveAndRenameSingleFolderImage(File dest, List<File> listOfImages) {
@@ -205,7 +172,6 @@ public class DefaultExportStrategy {
                         getExtension(oldFolderImage.getName())
         );
         move(oldFolderImage, newFolderImage);
-        //oldFolderImage.renameTo(newFolderImage);
     }
 
     private boolean isReleaseContainsRenamedFolderImage(DirectoryScope dirScope, List<File> listOfImages) {
@@ -229,34 +195,6 @@ public class DefaultExportStrategy {
         for (File other : listOfOthers) {
             move(other, dest);
         }
-
-        /*if (!directoryScope.getListOfOthers().get(0).getParentFile().equals(dest)) {
-            File[] cont = dest.listFiles();
-            File destFolder = null;
-            boolean exists = false;
-
-            for (File d : cont) {
-                if (d.getName().equals(directoryScope.getListOfOthers().get(0).getParentFile().getName())) {
-                    destFolder = d;
-                    exists = true;
-                    break;
-                }
-            }
-
-            if (exists) {
-                for (File otherFile : directoryScope.getListOfOthers().get(0).getParentFile().listFiles()) {
-                    move(otherFile, destFolder);
-                }
-            } else {
-                for (File otherFile : directoryScope.getListOfOthers()) {
-                    move(otherFile, dest);
-                }
-            }
-        } else {
-            for (File otherFile : directoryScope.getListOfOthers()) {
-                move(otherFile, dest);
-            }
-        }*/
     }
 
     private void move(File from, File to) {
@@ -337,7 +275,7 @@ public class DefaultExportStrategy {
         }
     }
 
-    private boolean attachArtworkFileIfExists(MediumScope mediumScope) {
+    /*private boolean attachArtworkFileIfExists(MediumScope mediumScope) {
         File artworkFile = null;
 
         if (mediumScope.hasArtwork()) {
@@ -362,7 +300,7 @@ public class DefaultExportStrategy {
         } catch (IOException e) {
             System.out.println("IOException while attaching artwork: " + e.getMessage());
         }
-    }
+    }*/
 
     private String trackToString(String string, int count) {
         if (count < 10) {

@@ -2,7 +2,6 @@ package com.scwot.renamer.core.scope;
 
 import lombok.Builder;
 import lombok.Value;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.HashMap;

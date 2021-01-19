@@ -1,14 +1,13 @@
 package com.scwot.renamer.core.converter;
 
 
+import com.scwot.renamer.core.musicbrainz.MBService;
 import com.scwot.renamer.core.scope.DirectoryScope;
 import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.Mp3FileScope;
 import com.scwot.renamer.core.scope.ReleaseScope;
-import com.scwot.renamer.core.utils.DirHelper;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,6 +19,12 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @Service
 public class MediumsToReleaseConverter {
 
+    private final MBService mbService;
+
+    public MediumsToReleaseConverter(MBService mbService) {
+        this.mbService = mbService;
+    }
+
     public ReleaseScope convert(List<MediumScope> mediumScopeList) {
         SortedSet<String> artists = new TreeSet<>();
         SortedSet<String> albums = new TreeSet<>();
@@ -30,14 +35,6 @@ public class MediumsToReleaseConverter {
         Set<String> catNums = new LinkedHashSet<>();
 
         byte[] thumbImage;
-
-        /*if (mediumScopeList.size() > 1) {
-            isMultiple = true;
-            final List<DirectoryScope> collect = mediumScopeList.stream().map(s -> s.getDirectoryScope()).collect(Collectors.toList());
-
-            final RootDirectoryScope rootDirectoryScope = new RootDirectoryScope(collect);
-            System.out.println();
-        }*/
 
         final Stream<MediumScope> dirScopeStream = mediumScopeList.stream();
 
@@ -60,7 +57,6 @@ public class MediumsToReleaseConverter {
                 .peek((audio) -> catNums.addAll(Optional.ofNullable(audio.getCatNums()).orElse(new ArrayList<>())))
                 .forEach((audio) -> yearAlbum.put(audio.getAlbumTitle(), audio.getYear()));
 
-        final File rootDir = findRoot(mediumScopeList);
         final Map<String, String> catalogues = createCatalogues(labels, catNums);
         final boolean isVA = mediumScopeList.get(0).isVA();
 
@@ -90,6 +86,7 @@ public class MediumsToReleaseConverter {
         final List<String> topArtistGenres = genres.stream().limit(3).collect(Collectors.toList());
 
         final DirectoryScope rootScope = mediumScopeList.get(0).getDirectoryScope().getRoot();
+        final String artistCountry = mbService.findArtistCountry(albumArtist);
 
         return ReleaseScope.builder()
                 .mediumScopeList(mediumScopeList)
@@ -108,13 +105,12 @@ public class MediumsToReleaseConverter {
                 .image(image)
                 .yearReleased(yearReleased)
                 .yearRecorded(yearRecorded)
-                /*.labels(labels)
-                .catNums(catNums)*/
                 .totalDiskNumber(mediumScopeList.size())
                 .artists(artists)
                 .albums(albums)
                 .topArtistGenres(topArtistGenres) // we also have "genres" for remaining
                 .years(years)
+                .artistCountry(artistCountry)
                 .build();
     }
 
@@ -154,13 +150,4 @@ public class MediumsToReleaseConverter {
             IntStream.range(0, diff).forEachOrdered(i -> catNums.add("none"));
         }
     }
-
-    private File findRoot(List<MediumScope> mediumScopeList) {
-        return mediumScopeList.stream()
-                .map(mediumScope -> mediumScope.getDirectoryScope().getCurrentDir())
-                .findFirst()
-                .orElseThrow(RuntimeException::new)
-                .getParentFile();
-    }
-
 }
