@@ -1,5 +1,6 @@
 package com.scwot.renamer.core.scope;
 
+import com.scwot.renamer.core.utils.FileHelper;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @Data
 public class DirectoryScope {
 
+    private DirectoryScope root;
     private List<DirectoryScope> children;
     private List<File> listOfInnerFolders;
     private List<Mp3FileScope> listOfAudios;
@@ -31,6 +33,20 @@ public class DirectoryScope {
         listOfAudios = new ArrayList<>();
         listOfImages = new ArrayList<>();
         listOfOthers = new ArrayList<>();
+
+        for (File file : inputDir.listFiles()) {
+            if (!file.isDirectory()) {
+                if (FileHelper.isAudioFile(file)) {
+                    final Mp3FileScope audio = new Mp3FileScope();
+                    audio.read(file);
+                    this.addAudio(audio);
+                } else if (FileHelper.isImageFile(file)) {
+                    this.addImage(file);
+                } else {
+                    this.addOther(file);
+                }
+            }
+        }
     }
 
     public void addAudio(Mp3FileScope audio) {
@@ -120,6 +136,10 @@ public class DirectoryScope {
                 directoryScope.getCurrentDir().getAbsolutePath(),
                 currentDir.getAbsolutePath()
         );
+    }
+
+    public boolean isRoot(){
+        return root == null;
     }
 
 }

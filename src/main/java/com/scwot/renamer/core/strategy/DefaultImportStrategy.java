@@ -56,6 +56,8 @@ public class DefaultImportStrategy {
     private List<MediumScope> walk(File parent) {
         final List<MediumScope> mediumScopeList = new ArrayList<>();
         //final DirectoryScope parentDirScope = buildDirectoryScope(parent);
+        final boolean[] isFirstElement = {true};
+        final DirectoryScope[] rootScope = new DirectoryScope[1];
 
         try {
             Path startPath = parent.toPath();
@@ -64,7 +66,14 @@ public class DefaultImportStrategy {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir,
                                                          BasicFileAttributes attrs) {
-                    final DirectoryScope currentDirScope = buildDirectoryScope(dir.toFile());
+                    final DirectoryScope currentDirScope = new DirectoryScope(dir.toFile());
+                    if (isFirstElement[0]){
+                        rootScope[0] = currentDirScope;
+                        isFirstElement[0] = false;
+                    } else {
+                        currentDirScope.setRoot(rootScope[0]);
+                        rootScope[0].addChild(currentDirScope);
+                    }
 
                     if (currentDirScope.hasAudio()) {
                         final MediumScope mediumScope = directoryToMediumConverter.convert(currentDirScope);
@@ -90,28 +99,6 @@ public class DefaultImportStrategy {
 
         return mediumScopeList;
     }
-
-    private DirectoryScope buildDirectoryScope(File dir) {
-        final DirectoryScope directoryScope = new DirectoryScope(dir);
-        //final DirInfo dirInfo = DirHelper.countFileTypes(dir.toFile());
-
-        for (File file : dir.listFiles()) {
-            if (!file.isDirectory()) {
-                if (FileHelper.isAudioFile(file)) {
-                    final Mp3FileScope audio = new Mp3FileScope();
-                    audio.read(file);
-                    directoryScope.addAudio(audio);
-                } else if (FileHelper.isImageFile(file)) {
-                    directoryScope.addImage(file);
-                } else {
-                    directoryScope.addOther(file);
-                }
-            }
-        }
-
-        return directoryScope;
-    }
-
 
 
     /*private int discNumber(DirectoryScope currentEntry) {

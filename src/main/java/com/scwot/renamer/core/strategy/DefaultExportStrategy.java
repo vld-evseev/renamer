@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.io.FilenameUtils.EXTENSION_SEPARATOR;
 import static org.apache.commons.io.FilenameUtils.getExtension;
@@ -85,34 +86,41 @@ public class DefaultExportStrategy {
             }
         }
 
-        final List<DirectoryScope> directoryScopeList = releaseScope.getMediumScopeList()
+        if (releaseScope.getRoot() != null) {
+            final List<DirectoryScope> remaining =
+                    releaseScope.getRoot().getChildren().stream().filter(directoryScope -> !directoryScope.hasAudio()).collect(Collectors.toList());
+            batchOrganize(remaining, newAlbumDirectory);
+            organizeData(releaseScope.getRoot(), newAlbumDirectory);
+        }
+
+        /*final List<DirectoryScope> directoryScopeList = releaseScope.getMediumScopeList()
                 .stream()
                 .flatMap(mediumScope ->
                         mediumScope.getDirectoryScope().getChildren().stream())
                 .collect(Collectors.toList());
 
         final List<DirectoryScope> remainingDirs =
-                releaseScope.getMediumScopeList().stream().map(MediumScope::getDirectoryScope).collect(Collectors.toList());
+                releaseScope.getMediumScopeList().stream().map(MediumScope::getDirectoryScope).collect(Collectors.toList());*/
 
-        batchOrganize(directoryScopeList, destination);
+        //organizeData(releaseScope.getRoot(), destination);
         //batchOrganize(remainingDirs, destination);
     }
 
     private void batchOrganize(List<DirectoryScope> dirScopeList, File dest) {
         for (DirectoryScope directoryScope : dirScopeList) {
-            organiseAudio(directoryScope, dest);
+            //organizeAudio(directoryScope, dest);
             organizeImages(directoryScope, dest);
             organizeOthers(directoryScope, dest);
         }
     }
 
     private void organizeData(DirectoryScope dirScope, File dest) {
-        organiseAudio(dirScope, dest);
+        organizeAudio(dirScope, dest);
         organizeImages(dirScope, dest);
         organizeOthers(dirScope, dest);
     }
 
-    private void organiseAudio(DirectoryScope dirScope, File dest) {
+    private void organizeAudio(DirectoryScope dirScope, File dest) {
         if (!dirScope.hasAudio()) {
             return;
         }
@@ -137,18 +145,7 @@ public class DefaultExportStrategy {
             final boolean isCoversDir = (listOfImages.size() > 1 && !dirScope.hasAudio())
                     || listOfImages.size() == 1 && !dirScope.hasAudio() && !dirScope.hasInnerFolders();
             if (isCoversDir) {
-                File coversDir = new File(dest + File.separator + COVERS_NAME);
-                if (!coversDir.exists()) {
-                    if (coversDir.mkdir()) {
-                        for (File image : listOfImages) {
-                            move(image, coversDir);
-                        }
-                    }
-                } else {
-                        /*for (File image : dirScope.getListOfImages()) {
-                            move(image, dest);
-                        }*/
-                }
+                moveToCoversDir(dest, listOfImages);
             } else {
                 if (listOfImages.size() > 1 && dirScope.hasAudio()) {
                     File coversFolder = new File(dest + File.separator + COVERS_NAME);
@@ -162,6 +159,18 @@ public class DefaultExportStrategy {
                     }
                 }
             }
+        }
+    }
+
+    private void moveToCoversDir(File dest, List<File> listOfImages) {
+        if (listOfImages.isEmpty()){
+            return;
+        }
+
+        File coversDir = new File(dest + File.separator + COVERS_NAME);
+        coversDir.mkdir();
+        for (File image : listOfImages) {
+            move(image, coversDir);
         }
     }
 
@@ -179,6 +188,10 @@ public class DefaultExportStrategy {
                         getExtension(oldFolderImage.getName())
         );
         move(oldFolderImage, newFolderImage);
+
+        final List<File> remainingImages =
+                listOfImages.stream().filter(file -> !file.getName().equalsIgnoreCase(oldFolderImage.getName())).collect(Collectors.toList());
+        moveToCoversDir(dest, remainingImages);
         //oldFolderImage.renameTo(newFolderImage);
     }
 
@@ -212,7 +225,12 @@ public class DefaultExportStrategy {
 
         removeJunkFiles(directoryScope.getListOfOthers());
 
-        if (!directoryScope.getListOfOthers().get(0).getParentFile().equals(dest)) {
+        final List<File> listOfOthers = directoryScope.getListOfOthers();
+        for (File other : listOfOthers) {
+            move(other, dest);
+        }
+
+        /*if (!directoryScope.getListOfOthers().get(0).getParentFile().equals(dest)) {
             File[] cont = dest.listFiles();
             File destFolder = null;
             boolean exists = false;
@@ -238,7 +256,7 @@ public class DefaultExportStrategy {
             for (File otherFile : directoryScope.getListOfOthers()) {
                 move(otherFile, dest);
             }
-        }
+        }*/
     }
 
     private void move(File from, File to) {
@@ -246,7 +264,7 @@ public class DefaultExportStrategy {
             if (from.exists()) {
                 if (from.isDirectory() && to.isDirectory()) {
                     FileUtils.copyDirectory(from, to, false);
-                } else if (from.isFile() && to.isDirectory()){
+                } else if (from.isFile() && to.isDirectory()) {
                     FileUtils.copyFileToDirectory(from, to, false);
                 } else {
                     FileUtils.copyFile(from, to);

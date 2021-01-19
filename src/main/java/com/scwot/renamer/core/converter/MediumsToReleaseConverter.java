@@ -5,6 +5,7 @@ import com.scwot.renamer.core.scope.DirectoryScope;
 import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.Mp3FileScope;
 import com.scwot.renamer.core.scope.ReleaseScope;
+import com.scwot.renamer.core.utils.DirHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -86,13 +87,15 @@ public class MediumsToReleaseConverter {
 
         final String yearReleased = Collections.max(years);
         final String yearRecorded = Collections.min(years);
+        final List<String> topArtistGenres = genres.stream().limit(3).collect(Collectors.toList());
+
+        final DirectoryScope rootScope = mediumScopeList.get(0).getDirectoryScope().getRoot();
 
         return ReleaseScope.builder()
                 .mediumScopeList(mediumScopeList)
-                .root(rootDir)
+                .root(rootScope)
                 .catalogues(catalogues)
                 .isVA(isVA)
-
                 .albumArtist(albumArtist)
                 .albumArtistSort(albumArtistSort)
                 .albumTitle(albumTitle)
@@ -110,7 +113,7 @@ public class MediumsToReleaseConverter {
                 .totalDiskNumber(mediumScopeList.size())
                 .artists(artists)
                 .albums(albums)
-                .topArtistGenres(new ArrayList<>(genres)) // we also have "genres" for remaining
+                .topArtistGenres(topArtistGenres) // we also have "genres" for remaining
                 .years(years)
                 .build();
     }
