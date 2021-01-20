@@ -5,6 +5,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -51,27 +53,38 @@ public class ExportRenameUtils {
     }
 
     private static String resolveGenreSubstring(List<String> topArtistGenres) {
-        final Set<String> resolvedGenresList = new LinkedHashSet<>();
-        for (String toSearch : topArtistGenres) {
-            for (String artistGenre : topArtistGenres) {
-                if (resolvedGenresList.contains(artistGenre) || artistGenre.equals(toSearch)) {
-                    continue;
-                }
+        final List<String> result = new ArrayList<>();
+        final Map<String, String> allExcluded = new LinkedHashMap<>();
 
-                if (artistGenre.contains(toSearch) && !artistGenre.equals(toSearch)) {
-                    break;
-                } else {
-                    resolvedGenresList.add(toSearch);
-                    break;
+        for (String genreToSearch : topArtistGenres.stream().sorted().collect(Collectors.toList())) {
+            boolean added = false;
+            final List<String> filteredGenres =
+                    topArtistGenres.stream()
+                            //.filter(genre -> !genre.equals(genreToSearch))
+                            .sorted()
+                            .collect(Collectors.toList());
+
+            for (String genre : filteredGenres) {
+                if (genre.contains(genreToSearch) || genreToSearch.contains(genre)) {
+                    if (genre.length() > genreToSearch.length()) {
+                        allExcluded.put(genreToSearch, genre);
+                    } else if (genre.length() < genreToSearch.length()) {
+                        allExcluded.put(genre, genreToSearch);
+                    }
                 }
             }
         }
 
-        if (resolvedGenresList.isEmpty()) {
-            resolvedGenresList.addAll(topArtistGenres);
+        for (String topArtistGenre : topArtistGenres) {
+            if (allExcluded.containsKey(topArtistGenre)) {
+                result.add(allExcluded.get(topArtistGenre));
+            } else if (!allExcluded.containsValue(topArtistGenre)) {
+                result.add(topArtistGenre);
+            }
         }
 
-        final String joinedTopArtistGenres = String.join(", ", resolvedGenresList);
+        final String joinedTopArtistGenres = String.join(", ",
+                result.stream().sorted().collect(Collectors.toList()));
         return joinedTopArtistGenres;
     }
 

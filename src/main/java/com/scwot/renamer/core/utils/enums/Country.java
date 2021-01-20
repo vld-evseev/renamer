@@ -70,6 +70,7 @@ public enum Country {
     TM("Turkmenistan", "TM"),
     UA("Ukraine", "UA"),
     GB("UK", "GB"),
+    UK("UK", "UK"),
     US("USA", "US"),
     UZ("Uzbekistan", "UZ");
 

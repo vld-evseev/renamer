@@ -33,7 +33,6 @@ public class LaunchService {
             System.out.println();
             exportService.export(releaseScope, includeInArtistFolder);
         }
-        //candidates.forEach(file -> log.info(file.getAbsolutePath()));
     }
 
 }
