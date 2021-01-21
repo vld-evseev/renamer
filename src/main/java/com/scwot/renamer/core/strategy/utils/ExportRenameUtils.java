@@ -126,16 +126,22 @@ public class ExportRenameUtils {
 
         sb.append("]");
 
-        return sb.toString();
+        sb.append(resolveReleaseType(releaseScope));
 
-        /*for (MediumScope mediumScope : releaseScope.getMediumScopeList()) {
-            fillAlbumString(sb, mediumScope);
-            final int totalDiskNumber = releaseScope.getTotalDiskNumber();
-            if (totalDiskNumber > 1) {
-                sb.append(" (").append(totalDiskNumber).append("CD)");
-                break;
+        return sb.toString();
+    }
+
+    private static String resolveReleaseType(ReleaseScope releaseScope) {
+        final String releaseType = releaseScope.getReleaseType();
+        if (!releaseType.equalsIgnoreCase("album")) {
+            final String[] multipleTypes = releaseType.split("/");
+            if (multipleTypes.length > 1) {
+                return " [" + multipleTypes[1] + "]";
             }
-        }*/
+
+            return " [" + releaseType + "]";
+        }
+        return EMPTY;
     }
 
     private static String resolveYearRecordedSubstring(ReleaseScope releaseScope) {

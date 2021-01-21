@@ -6,6 +6,7 @@ import com.scwot.renamer.core.scope.DirectoryScope;
 import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.Mp3FileScope;
 import com.scwot.renamer.core.scope.ReleaseScope;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -127,8 +128,8 @@ public class MediumsToReleaseConverter {
     }
 
     private String resolveAlbumArtistSort(String albumArtist) {
-        if (albumArtist.toLowerCase().startsWith("the")) {
-            return albumArtist.toLowerCase().replaceFirst("^([Tt])he", EMPTY) + ", The";
+        if (StringUtils.startsWithIgnoreCase(albumArtist, "the")) {
+            return albumArtist.replaceFirst("^([Tt])he", EMPTY) + ", The";
         }
 
         return albumArtist;
