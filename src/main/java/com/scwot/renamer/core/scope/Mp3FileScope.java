@@ -11,6 +11,7 @@ import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagField;
+import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
 import org.jaudiotagger.tag.images.Artwork;
 
@@ -140,7 +141,12 @@ public class Mp3FileScope {
     }
 
     private static String fromCustomTag(MP3File audioFile, String customTagName, String defaultValue) {
-        final List<TagField> tags = audioFile.getID3v2Tag().getFields(CUSTOM_FIELD);
+        final AbstractID3v2Tag id3v2Tag = audioFile.getID3v2Tag();
+        if (id3v2Tag == null || id3v2Tag.isEmpty()) {
+            return EMPTY;
+        }
+
+        final List<TagField> tags = id3v2Tag.getFields(CUSTOM_FIELD);
         return tags.stream()
                 .map(tag -> tagValue(tag.toString(), customTagName))
                 .filter(StringUtils::isNotEmpty)

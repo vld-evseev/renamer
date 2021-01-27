@@ -85,7 +85,7 @@ public class ExportRenameUtils {
 
         final String joinedTopArtistGenres = String.join(", ",
                 result.stream().sorted().collect(Collectors.toList()));
-        return joinedTopArtistGenres;
+        return normalizeName(joinedTopArtistGenres);
     }
 
     public static String buildAlbumDirName(ReleaseScope releaseScope) {
@@ -125,15 +125,24 @@ public class ExportRenameUtils {
         }
 
         sb.append("]");
-
         sb.append(resolveReleaseType(releaseScope));
+        sb.append(resolveTotalDisksSubstring(releaseScope));
 
         return sb.toString();
     }
 
+    private static String resolveTotalDisksSubstring(ReleaseScope releaseScope) {
+        final int totalDiskNumber = releaseScope.getTotalDiskNumber();
+        if (totalDiskNumber > 1){
+            return " [" + totalDiskNumber + "CD]";
+        }
+        return EMPTY;
+    }
+
     private static String resolveReleaseType(ReleaseScope releaseScope) {
         final String releaseType = releaseScope.getReleaseType();
-        if (!releaseType.equalsIgnoreCase("album")) {
+        if (StringUtils.isNotEmpty(releaseType) &&
+                !releaseType.equalsIgnoreCase("album")) {
             final String[] multipleTypes = releaseType.split("/");
             if (multipleTypes.length > 1) {
                 return " [" + multipleTypes[1] + "]";
@@ -180,7 +189,7 @@ public class ExportRenameUtils {
     public static String trimTitle(String title) {
         String[] trimmed = title.split(" ");
 
-        if (title.length() > 30) {
+        if (title.length() > 70) {
             StringBuilder stringBuilder = new StringBuilder();
             int i = 0;
             for (String string : trimmed) {

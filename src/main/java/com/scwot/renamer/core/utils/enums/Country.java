@@ -20,6 +20,7 @@ public enum Country {
     BT("Bhutan", "BT"),
     BR("Brazil", "BR"),
     BG("Bulgaria", "BG"),
+    BA("Bosnia", "BA"),
     CA("Canada", "CA"),
     CL("Chile", "CL"),
     CN("China", "CN"),

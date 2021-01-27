@@ -128,8 +128,11 @@ public class MediumsToReleaseConverter {
     }
 
     private String resolveAlbumArtistSort(String albumArtist) {
-        if (StringUtils.startsWithIgnoreCase(albumArtist, "the")) {
-            return albumArtist.replaceFirst("^([Tt])he", EMPTY) + ", The";
+        final String[] chunks = albumArtist.split(" ");
+        if (chunks.length > 1 &&
+                chunks[0].length() == 3 &&
+                StringUtils.startsWithIgnoreCase(albumArtist, "the")) {
+            return albumArtist.replaceFirst("^([Tt])he", EMPTY).trim() + ", The";
         }
 
         return albumArtist;
@@ -142,11 +145,11 @@ public class MediumsToReleaseConverter {
         final ArrayList<String> labelsList = new ArrayList<>(labels);
         final ArrayList<String> catNumsList = new ArrayList<>(catNums);
 
-        if (catNumsList.size() > labelsList.size()) {
-            final String joinedCatNums = String.join(" / ", catNumsList);
+        if (catNumsList.size() > labelsList.size() || catNumsList.size() < labelsList.size()) {
+            final String firstCatNum = catNumsList.get(0);
 
             return labelsList.stream()
-                    .collect(Collectors.toMap(Function.identity(), label -> joinedCatNums, (a, b) -> b, LinkedHashMap::new));
+                    .collect(Collectors.toMap(Function.identity(), label -> firstCatNum, (a, b) -> b, LinkedHashMap::new));
         }
 
         return IntStream.range(0, labelsList.size())
