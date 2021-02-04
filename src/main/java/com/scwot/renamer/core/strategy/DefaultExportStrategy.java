@@ -205,11 +205,11 @@ public class DefaultExportStrategy {
         try {
             if (from.exists()) {
                 if (from.isDirectory() && to.isDirectory()) {
-                    FileUtils.copyDirectory(from, to, false);
+                    FileUtils.moveDirectory(from, to);
                 } else if (from.isFile() && to.isDirectory()) {
-                    FileUtils.copyFileToDirectory(from, to, false);
+                    FileUtils.moveFileToDirectory(from, to, true);
                 } else {
-                    FileUtils.copyFile(from, to);
+                    FileUtils.moveFile(from, to);
                 }
             }
         } catch (IOException e) {

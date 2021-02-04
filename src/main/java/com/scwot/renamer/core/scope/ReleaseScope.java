@@ -47,4 +47,7 @@ public class ReleaseScope {
 
     private Map<String, String> catalogues;
 
+    public boolean isVA() {
+        return albumArtist.equalsIgnoreCase("Various Artists");
+    }
 }

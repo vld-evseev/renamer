@@ -8,5 +8,5 @@ logging:
 
 
 app:
-  input: "E:\\Music\\!incoming\\!renamer_testing_input"
-  destination: "E:\\Music\\!incoming\\!renamer_testing_output"
+  input: "D:\\Music\\!to_collection"
+  destination: "G:\\Music\\!move"

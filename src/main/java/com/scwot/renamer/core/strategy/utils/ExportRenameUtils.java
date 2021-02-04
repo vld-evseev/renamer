@@ -89,8 +89,13 @@ public class ExportRenameUtils {
     }
 
     public static String buildAlbumDirName(ReleaseScope releaseScope) {
+        final StringBuilder sb = new StringBuilder();
+        if (releaseScope.isVA()) {
+            sb.append("VA - ");
+        }
+
         final String yearSubstring = resolveYearRecordedSubstring(releaseScope);
-        final StringBuilder sb = new StringBuilder(yearSubstring);
+        sb.append(yearSubstring);
 
         final String normalizedAlbumTitle = trimTitle(normalizeName(releaseScope.getAlbumTitle()));
         sb.append(" - ").append(normalizedAlbumTitle);
@@ -140,6 +145,10 @@ public class ExportRenameUtils {
     }
 
     private static String resolveReleaseType(ReleaseScope releaseScope) {
+        if (releaseScope.isVA()) {
+            return EMPTY;
+        }
+
         final String releaseType = releaseScope.getReleaseType();
         if (StringUtils.isNotEmpty(releaseType) &&
                 !releaseType.equalsIgnoreCase("album")) {
