@@ -4,10 +4,10 @@ import java.io.File;
 
 public class DirInfo {
 
-    private File dir;
-    private int audioCount;
-    private int imagesCount;
-    private int othersCount;
+    private final File dir;
+    private final int audioCount;
+    private final int imagesCount;
+    private final int othersCount;
 
     public DirInfo(File dir, int audioCount, int imagesCount, int othersCount) {
         this.dir = dir;

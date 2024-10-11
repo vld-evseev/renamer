@@ -15,13 +15,6 @@ import java.util.List;
 @Service
 public class MBService {
 
-    /*
-    * results.get(0).getArtist().getTags().stream()
-    * .sorted(Comparator.comparingLong(TagWs2::getCount).reversed())
-    * .limit(5)
-    * .collect(Collectors.toList())
-    * */
-
     public String findArtistCountry(String artistName) {
         Artist artist = new Artist();
         artist.search(artistName);

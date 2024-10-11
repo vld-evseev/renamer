@@ -48,7 +48,7 @@ public class DirHelper {
     }
 
     /*
-       Count subfolders which represents separate CDs (CD1, CD2, etc.)
+       Count subfolders which represent separate CDs (CD1, CD2, etc.)
     */
     public static int countMultiDiskFolders(File dir) {
         int cdCount = 0;
@@ -111,12 +111,6 @@ public class DirHelper {
     public static boolean releaseNotPresent(DirInfo dirInfo) {
         final File dir = dirInfo.getDir();
         return !dirInfo.hasAudio() && DirHelper.countMultiDiskFolders(dir) == 0 && !hasInnerFolder(dir);
-    }
-
-    //TODO: do I really need it?
-    public static boolean containsJustInnerFolders(DirInfo dirInfo) {
-        final File dir = dirInfo.getDir();
-        return !dirInfo.hasAudio() && DirHelper.countMultiDiskFolders(dir) == 0 && hasInnerFolder(dir);
     }
 
 }

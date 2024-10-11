@@ -22,7 +22,7 @@ public class StartController {
     }
 
     @GetMapping("/start")
-    public void greeting() {
+    public void start() {
         boolean includeInArtistFolder = true;
 
         File dir = new File(input);

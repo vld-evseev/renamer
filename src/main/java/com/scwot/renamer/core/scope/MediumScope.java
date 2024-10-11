@@ -4,8 +4,8 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 
 @Value
@@ -19,7 +19,7 @@ public class MediumScope {
     SortedSet<String> albumSet;
     SortedSet<String> genreSet;
     SortedSet<String> yearSet;
-    HashMap<String, String> albumYearMap;
+    Map<String, String> albumYearMap;
 
     int diskNumber;
     String albumTitle;
@@ -30,9 +30,5 @@ public class MediumScope {
     List<String> catNumList;
     File artwork;
     boolean isVA;
-
-    public boolean hasArtwork() {
-        return !directoryScope.getListOfImages().isEmpty();
-    }
 
 }

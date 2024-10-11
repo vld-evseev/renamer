@@ -1,12 +1,14 @@
-package com.scwot.renamer.core.strategy.utils;
+package com.scwot.renamer.core.io.utils;
 
 import com.scwot.renamer.core.scope.ReleaseScope;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -164,7 +166,7 @@ public class ExportRenameUtils {
 
     private static String resolveYearRecordedSubstring(ReleaseScope releaseScope) {
         final String yearRecorded = releaseScope.getYearRecorded();
-        if (StringUtils.isNotEmpty(yearRecorded) || !yearRecorded.equalsIgnoreCase("xxxx")) {
+        if (StringUtils.isNotBlank(yearRecorded) && !yearRecorded.equalsIgnoreCase("xxxx")) {
             return yearRecorded;
         }
 
@@ -181,18 +183,11 @@ public class ExportRenameUtils {
     }
 
     public static String normalizeName(String name) {
-        return name.replaceAll("$", "")
-                .replaceAll("�", "")
-                .replaceAll("`", "'")
-                .replaceAll("<", "")
-                .replaceAll(">", "")
+        return name.replaceAll("[$�`<>*\"?]", "")
+                .replaceAll("\\\\", "")
+                .replaceAll("\\\\", "")
                 .replaceAll("/", "-")
-                .replaceAll("\\\\", "")
-                .replaceAll("\\\\", "")
-                .replaceAll("\\*", "")
-                .replaceAll(":", " -")
-                .replaceAll("\"", "")
-                .replaceAll("\\?", "");
+                .replaceAll(":", " -");
     }
 
     public static String trimTitle(String title) {

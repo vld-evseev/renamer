@@ -36,7 +36,7 @@ public class StartupApplicationListener {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        /*boolean includeInArtistFolder = true;
+        boolean includeInArtistFolder = true;
 
         File dir = new File(input);
 
@@ -45,7 +45,7 @@ public class StartupApplicationListener {
             launchService.start(dir, includeInArtistFolder);
         } else {
             log.info(dir.getAbsolutePath() + " doesn't exists");
-        }*/
+        }
     }
 
 }

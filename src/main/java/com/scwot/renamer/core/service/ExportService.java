@@ -1,6 +1,6 @@
 package com.scwot.renamer.core.service;
 
-import com.scwot.renamer.core.strategy.DefaultExportStrategy;
+import com.scwot.renamer.core.io.DefaultExportStrategy;
 import com.scwot.renamer.core.scope.ReleaseScope;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

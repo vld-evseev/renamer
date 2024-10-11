@@ -1,5 +1,6 @@
 package com.scwot.renamer.core.scope;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -28,14 +29,15 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Slf4j
 @Data
+@Builder
 public class Mp3FileScope {
 
-    public static final String CUSTOM_FIELD = "TXXX";
-    public static final String CATALOGNUMBER_TAG_NAME = "CATALOGNUMBER";
-    public static final String ORIGINALYEAR_TAG_NAME = "originalyear";
-    public static final String ARTISTS_TAG_NAME = "ARTISTS";
-    public static final String MEDIATYPE_TAG_NAME = "MEDIATYPE";
-    public static final String RELEASE_COUNTRY = "MusicBrainz Album Release Country";
+    private static final String CUSTOM_FIELD = "TXXX";
+    private static final String CATALOGNUMBER_TAG_NAME = "CATALOGNUMBER";
+    private static final String ORIGINALYEAR_TAG_NAME = "originalyear";
+    private static final String ARTISTS_TAG_NAME = "ARTISTS";
+    private static final String MEDIATYPE_TAG_NAME = "MEDIATYPE";
+    private static final String RELEASE_COUNTRY = "MusicBrainz Album Release Country";
     public static final String UNKNOWN_VALUE = "[unknown]";
 
     private static final String[] DELIMITERS = {", ", ";", "\\\\", "/"};
@@ -64,7 +66,7 @@ public class Mp3FileScope {
     private List<String> artists;
     private Boolean hasArtwork;
     private Integer discNumber;
-    private int trackCount;
+    //private int trackCount;
     private int fileNum;
     private Long length;
     private String format;
@@ -72,7 +74,7 @@ public class Mp3FileScope {
 
     private byte[] image;
 
-    public void read(File file) {
+    /*public void read(File file) {
         audioFile = (MP3File) readAudio(file);
         processNullTag(audioFile);
 
@@ -94,7 +96,7 @@ public class Mp3FileScope {
         format = fromCustomTag(audioFile, MEDIATYPE_TAG_NAME, EMPTY);
 
         year = StringUtils.substring(boundedFromTag(audioFile, FieldKey.YEAR, EMPTY), 0, 4);
-        origYear = StringUtils.substring(origYearValue(audioFile, FieldKey.ORIGINAL_YEAR, EMPTY), 0, 4);
+        origYear = StringUtils.substring(origYearValue(audioFile, FieldKey.ORIGINAL_YEAR, year), 0, 4);
         discNumber = discNumberValue(audioFile);
         genres = listFromTag(audioFile, FieldKey.GENRE);
         artists = Arrays.asList(splitString(fromCustomTag(audioFile, ARTISTS_TAG_NAME, EMPTY)));
@@ -110,7 +112,7 @@ public class Mp3FileScope {
         }
     }
 
-    public AudioFile readAudio(File file) {
+    /*public AudioFile readAudio(File file) {
         try {
             return AudioFileIO.read(file);
         } catch (Exception ex) {
@@ -130,7 +132,7 @@ public class Mp3FileScope {
     }
 
     private static String origYearValue(MP3File audioFile, FieldKey fieldKey, String defaultValue) {
-        final String value = boundedFromTag(audioFile, fieldKey, defaultValue);
+        final String value = boundedFromTag(audioFile, fieldKey, defaultValue).substring(0, 4);
         final String origYear = fromCustomTag(audioFile, ORIGINALYEAR_TAG_NAME, defaultValue);
 
         if (StringUtils.isNotEmpty(value) && (Integer.parseInt(value) > Integer.parseInt(origYear))) {
@@ -207,7 +209,7 @@ public class Mp3FileScope {
 
     private static boolean hasArtwork(MP3File audioFile) {
         return !audioFile.getTag().getArtworkList().isEmpty();
-    }
+    }*/
 
     public int getTrack() {
         int value = 0;
@@ -223,7 +225,7 @@ public class Mp3FileScope {
         return value;
     }
 
-    private static String tagValue(String tag, String key) {
+    /*private static String tagValue(String tag, String key) {
         String value = EMPTY;
         if (tag.contains(key)) {
             value = tag.split("; ")[1];
@@ -255,7 +257,7 @@ public class Mp3FileScope {
         }
 
         return defaultValue;
-    }
+    }*/
 
     private static String fromAudio(MP3File audioFile, FieldKey fieldKey) {
         return audioFile.getTag().getFirst(fieldKey);
@@ -286,7 +288,7 @@ public class Mp3FileScope {
                 .append("artists", artists)
                 .append("hasArtwork", hasArtwork)
                 .append("discNumber", discNumber)
-                .append("trackCount", trackCount)
+                //.append("trackCount", trackCount)
                 .append("fileNum", fileNum)
                 .append("length", length)
                 .append("format", format)

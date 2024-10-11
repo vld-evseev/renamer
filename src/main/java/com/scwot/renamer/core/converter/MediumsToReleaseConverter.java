@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Service
-public class MediumsToReleaseConverter {
+public class MediumsToReleaseConverter implements Converter<List<MediumScope>, ReleaseScope>{
 
     private final MBService mbService;
 

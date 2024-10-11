@@ -8,5 +8,7 @@ logging:
 
 
 app:
-  input: "D:\\Music\\!to_collection"
-  destination: "G:\\Music\\!move"
+  input: "nfs://localhost//!to-rename/!ready-test"
+  destination: "nfs://localhost//!to-rename/!renamed"
+  input2: "/Users/user/.mounty/BLACK/!to-rename/!ready-test"
+  destination2: "/Users/user/.mounty/BLACK/!to-rename/!renamed"

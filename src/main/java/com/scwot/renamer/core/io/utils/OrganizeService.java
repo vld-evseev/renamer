@@ -1,4 +1,4 @@
-package com.scwot.renamer.core.strategy.utils;
+package com.scwot.renamer.core.io.utils;
 
 import com.scwot.renamer.core.scope.Mp3FileScope;
 import org.jaudiotagger.audio.AudioFile;
@@ -8,8 +8,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.scwot.renamer.core.strategy.utils.ExportRenameUtils.normalizeName;
-import static com.scwot.renamer.core.strategy.utils.ExportRenameUtils.trimTitle;
+import static com.scwot.renamer.core.io.utils.ExportRenameUtils.normalizeName;
+import static com.scwot.renamer.core.io.utils.ExportRenameUtils.trimTitle;
 import static org.apache.commons.io.FilenameUtils.EXTENSION_SEPARATOR;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.jaudiotagger.tag.FieldKey.*;
@@ -18,14 +18,13 @@ import static org.jaudiotagger.tag.FieldKey.*;
 public class OrganizeService {
 
     public void renameAudio(List<Mp3FileScope> audioList, boolean isVA) {
-        File newFile;
+        /*File newFile;
         List<Mp3FileScope> renamedAudioList = new ArrayList<>();
 
         for (int i = 0; i < audioList.size(); i++) {
             AudioFile oldFile = audioList.get(i).getAudioFile();
 
-            if (!oldFile.getTag().getFirst(TRACK).isEmpty()
-                    && !oldFile.getTag().getFirst(TITLE).isEmpty()) {
+            if (trackAndTitleExist(oldFile)) {
                 if (isVA) {
                     newFile = new File(oldFile.getFile().getParentFile()
                             .getAbsolutePath()
@@ -65,12 +64,17 @@ public class OrganizeService {
                     }
                 }
             }
-        }
+        }*/
 
         /*if (!renamedAudioList.isEmpty()) {
             mediumScope.setAudioList(renamedAudioList);
             mediumScope.getDirectoryScope().setListOfAudios(renamedAudioList);
         }*/
+    }
+
+    private boolean trackAndTitleExist(AudioFile oldFile) {
+        return !oldFile.getTag().getFirst(TRACK).isEmpty()
+                && !oldFile.getTag().getFirst(TITLE).isEmpty();
     }
 
     private String buildTrackNumber(String track) {

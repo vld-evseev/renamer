@@ -25,7 +25,7 @@ public class AppConsole implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (args.length != 0) {
-            String path = args[0].replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "");
+            String path = sanitizePath(args);
             boolean includeInArtistFolder = Boolean.parseBoolean(args[1]);
 
             File dir = new File(path);
@@ -34,11 +34,15 @@ public class AppConsole implements CommandLineRunner {
                 log.info("Processing " + dir.getAbsolutePath());
                 launchService.start(dir, includeInArtistFolder);
             } else {
-                log.info(dir.getAbsolutePath() + " doesn't exists");
+                throw new IllegalArgumentException(dir.getAbsolutePath() + " doesn't exists");
             }
         } else {
             log.info("No arguments");
         }
 
+    }
+
+    private static String sanitizePath(String[] args) {
+        return args[0].replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "");
     }
 }

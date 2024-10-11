@@ -22,8 +22,6 @@ public class ReleaseScope {
     private SortedSet<String> albums;
     private SortedSet<String> genres;
     private SortedSet<String> years;
-    /*private Set<String> labels;
-    private Set<String> catNums;*/
     private Map<String, String> yearAlbum;
 
     private String yearRecorded;

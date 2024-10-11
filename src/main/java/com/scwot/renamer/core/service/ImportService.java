@@ -1,6 +1,6 @@
 package com.scwot.renamer.core.service;
 
-import com.scwot.renamer.core.strategy.DefaultImportStrategy;
+import com.scwot.renamer.core.io.DefaultImportStrategy;
 import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.converter.MediumsToReleaseConverter;
 import com.scwot.renamer.core.scope.ReleaseScope;

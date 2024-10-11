@@ -1,7 +1,7 @@
 package com.scwot.renamer.core.converter;
 
-import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.DirectoryScope;
+import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.Mp3FileScope;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class DirectoryToMediumConverter {
+public class DirectoryToMediumConverter implements Converter<DirectoryScope, MediumScope> {
 
     private final String VA_VALUE = "Various Artists";
 
@@ -25,7 +25,7 @@ public class DirectoryToMediumConverter {
         final SortedSet<String> albumSet = new TreeSet<>();
         final SortedSet<String> genreSet = new TreeSet<>();
         final SortedSet<String> yearSet = new TreeSet<>();
-        final HashMap<String, String> albumYearMap = new HashMap<>();
+        final Map<String, String> albumYearMap = new HashMap<>();
         final AtomicInteger diskNumber = new AtomicInteger();
 
         audioList.stream()
@@ -97,6 +97,7 @@ public class DirectoryToMediumConverter {
         if (albums.size() > 1) {
             StringBuilder sb = new StringBuilder(StringUtils.EMPTY);
             if (albums.size() == 2) {
+
                 if (StringUtils.getLevenshteinDistance(albums.first(), albums.last()) < 2) {
                     sb = new StringBuilder(albums.first());
                 } else {
