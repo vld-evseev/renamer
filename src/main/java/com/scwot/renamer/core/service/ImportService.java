@@ -1,8 +1,7 @@
 package com.scwot.renamer.core.service;
 
-import com.scwot.renamer.core.io.DefaultImportStrategy;
-import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.converter.MediumsToReleaseConverter;
+import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.ReleaseScope;
 import org.springframework.stereotype.Service;
 
@@ -12,18 +11,16 @@ import java.util.List;
 @Service
 public class ImportService {
 
-    private final DefaultImportStrategy importStrategy;
+    private final GatheringService gatheringService;
     private final MediumsToReleaseConverter toReleaseConverter;
 
-    public ImportService(DefaultImportStrategy importStrategy, MediumsToReleaseConverter toReleaseConverter) {
-        this.importStrategy = importStrategy;
+    public ImportService(GatheringService gatheringService, MediumsToReleaseConverter toReleaseConverter) {
+        this.gatheringService = gatheringService;
         this.toReleaseConverter = toReleaseConverter;
     }
 
     public ReleaseScope runImport(File inputDir) {
-        final List<MediumScope> mediumScopeList = importStrategy.execute(inputDir);
+        final List<MediumScope> mediumScopeList = gatheringService.execute(inputDir);
         return toReleaseConverter.convert(mediumScopeList);
     }
-
-
 }

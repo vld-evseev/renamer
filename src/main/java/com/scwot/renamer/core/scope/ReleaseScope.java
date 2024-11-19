@@ -39,7 +39,6 @@ public class ReleaseScope {
     private String barcode;
 
     private byte[] image;
-    private byte[] thumbImage;
 
     private int totalDiskNumber;
 

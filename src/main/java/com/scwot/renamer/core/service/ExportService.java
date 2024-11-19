@@ -1,6 +1,5 @@
 package com.scwot.renamer.core.service;
 
-import com.scwot.renamer.core.io.DefaultExportStrategy;
 import com.scwot.renamer.core.scope.ReleaseScope;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,9 +12,9 @@ public class ExportService {
     @Value("${app.destination}")
     private String destination;
 
-    private final DefaultExportStrategy exportStrategy;
+    private final RearrangeService exportStrategy;
 
-    public ExportService(DefaultExportStrategy exportStrategy) {
+    public ExportService(RearrangeService exportStrategy) {
         this.exportStrategy = exportStrategy;
     }
 

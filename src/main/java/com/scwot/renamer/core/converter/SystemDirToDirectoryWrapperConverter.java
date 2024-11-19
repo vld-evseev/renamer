@@ -44,7 +44,8 @@ public class SystemDirToDirectoryWrapperConverter implements Converter<File, Dir
         return new DirectoryScope(
                 listOfAudios,
                 listOfImages,
-                listOfOthers
+                listOfOthers,
+                dir
         );
     }
 }

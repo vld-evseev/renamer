@@ -1,4 +1,4 @@
-package com.scwot.renamer.core.utils.enums;
+package com.scwot.renamer.core.enums;
 
 public enum OtherTypes {
     TXT {

@@ -1,15 +1,25 @@
 package com.scwot.renamer.core.converter;
 
 
-import com.scwot.renamer.core.musicbrainz.MBService;
+import com.scwot.renamer.core.service.MBService;
 import com.scwot.renamer.core.scope.DirectoryScope;
 import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.Mp3FileScope;
 import com.scwot.renamer.core.scope.ReleaseScope;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,8 +45,6 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
         Set<String> labels = new LinkedHashSet<>();
         Set<String> catNums = new LinkedHashSet<>();
 
-        byte[] thumbImage;
-
         final Stream<MediumScope> dirScopeStream = mediumScopeList.stream();
 
         final List<Mp3FileScope> mergedAudioList =
@@ -58,11 +66,18 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
                 .peek((audio) -> catNums.addAll(Optional.ofNullable(audio.getCatNums()).orElse(new ArrayList<>())))
                 .forEach((audio) -> yearAlbum.put(audio.getAlbumTitle(), audio.getYear()));
 
-        final Map<String, String> catalogues = createCatalogues(labels, catNums);
-        final boolean isVA = mediumScopeList.get(0).isVA();
+        final Map<String, String> catalogues = extractCatalogues(labels, catNums);
+        final boolean isVA = mediumScopeList.getFirst().isVA();
 
         final String albumArtist = mergedAudioList.stream()
-                .flatMap(a -> Stream.of(a.getAlbumArtistTitle())).findFirst().orElse(String.join(" / ", artists));
+                .flatMap(a -> Stream.of(a.getAlbumArtistTitle()))
+                .filter(title -> title != null && !title.equalsIgnoreCase("[unknown]"))
+                .findFirst()
+                .or(() -> mergedAudioList.stream()
+                        .flatMap(a -> Stream.of(a.getArtistTitle()))
+                        .findFirst())
+                .orElse(String.join(" / ", artists));
+
         final String albumArtistSort = mergedAudioList.stream()
                 .flatMap(a -> Stream.of(resolveAlbumArtistSort(albumArtist))).findFirst().orElse(albumArtist);
         final String albumTitle = mergedAudioList.stream()
@@ -77,6 +92,8 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
                 .flatMap(a -> Stream.of(a.getReleaseMBID())).findFirst().orElse(null);
         final String releaseGroupMBID = mergedAudioList.stream()
                 .flatMap(a -> Stream.of(a.getReleaseGroupMBID())).findFirst().orElse(null);
+        final String artistMBID = mergedAudioList.stream()
+                .flatMap(a -> Stream.of(a.getArtistMBID())).findFirst().orElse(null);
         final String barcode = mergedAudioList.stream()
                 .flatMap(a -> Stream.of(a.getBarcode())).findFirst().orElse(null);
 
@@ -86,8 +103,8 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
         final String yearRecorded = Collections.min(years);
         final List<String> topArtistGenres = genres.stream().limit(3).collect(Collectors.toList());
 
-        final DirectoryScope rootScope = mediumScopeList.get(0).getDirectoryScope().getRoot();
-        final String artistCountry = mbService.findArtistCountry(albumArtist);
+        final DirectoryScope rootScope = mediumScopeList.getFirst().getDirectoryScope().getRoot();
+        final String artistCountry = mbService.findArtistCountry(artistMBID, albumArtist);
 
         return ReleaseScope.builder()
                 .mediumScopeList(mediumScopeList)
@@ -109,52 +126,57 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
                 .totalDiskNumber(mediumScopeList.size())
                 .artists(artists)
                 .albums(albums)
-                .topArtistGenres(topArtistGenres) // we also have "genres" for remaining
+                .topArtistGenres(topArtistGenres)
                 .years(years)
                 .artistCountry(artistCountry)
                 .build();
     }
 
     private byte[] getFirstCoverIfPresent(List<Mp3FileScope> mergedAudioList) {
-        byte[] firstImage = null;
-        for (Mp3FileScope mp3FileScope : mergedAudioList) {
-            final byte[] image = mp3FileScope.getImage();
-            if (image != null){
-                firstImage = image;
-                break;
-            }
-        }
-        return firstImage;
+        return mergedAudioList.stream()
+                .map(Mp3FileScope::getImage)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     private String resolveAlbumArtistSort(String albumArtist) {
-        final String[] chunks = albumArtist.split(" ");
-        if (chunks.length > 1 &&
-                chunks[0].length() == 3 &&
-                StringUtils.startsWithIgnoreCase(albumArtist, "the")) {
-            return albumArtist.replaceFirst("^([Tt])he", EMPTY).trim() + ", The";
+        if (albumArtist.length() > 3 && albumArtist.substring(0, 3).equalsIgnoreCase("the")) {
+            return albumArtist.substring(3).trim() + ", The";
         }
-
         return albumArtist;
     }
 
-    private Map<String, String> createCatalogues(final Set<String> labels,
-                                                 final Set<String> catNums) {
+    private Map<String, String> extractCatalogues(final Set<String> labels,
+                                                  final Set<String> catNums) {
         addCatalogueNumberIfNotPresent(labels, catNums);
 
-        final ArrayList<String> labelsList = new ArrayList<>(labels);
-        final ArrayList<String> catNumsList = new ArrayList<>(catNums);
+        final List<String> labelsList = new ArrayList<>(labels);
+        final List<String> catNumsList = new ArrayList<>(catNums);
 
-        if (catNumsList.size() > labelsList.size() || catNumsList.size() < labelsList.size()) {
-            final String firstCatNum = catNumsList.get(0);
+        if (catNumsList.size() != labelsList.size()) {
+            final String firstCatNum = catNumsList.getFirst();
 
             return labelsList.stream()
-                    .collect(Collectors.toMap(Function.identity(), label -> firstCatNum, (a, b) -> b, LinkedHashMap::new));
+                    .collect(
+                            Collectors.toMap(
+                                    Function.identity(),
+                                    label -> firstCatNum,
+                                    (existing, additional) -> additional,
+                                    LinkedHashMap::new
+                            ));
         }
 
         return IntStream.range(0, labelsList.size())
                 .boxed()
-                .collect(Collectors.toMap(labelsList::get, catNumsList::get, (s, a) -> s + " / " + a, LinkedHashMap::new));
+                .collect(
+                        Collectors.toMap(
+                                labelsList::get,
+                                catNumsList::get,
+                                (existing, additional) -> existing + " / " + additional,
+                                LinkedHashMap::new
+                        )
+                );
     }
 
     private void addCatalogueNumberIfNotPresent(final Set<String> labels,

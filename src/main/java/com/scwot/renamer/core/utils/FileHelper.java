@@ -1,7 +1,7 @@
 package com.scwot.renamer.core.utils;
 
-import com.scwot.renamer.core.utils.enums.AudioTypes;
-import com.scwot.renamer.core.utils.enums.ImageTypes;
+import com.scwot.renamer.core.enums.AudioTypes;
+import com.scwot.renamer.core.enums.ImageTypes;
 import lombok.SneakyThrows;
 
 import java.io.File;

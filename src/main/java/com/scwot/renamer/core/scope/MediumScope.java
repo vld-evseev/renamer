@@ -22,6 +22,7 @@ public class MediumScope {
     Map<String, String> albumYearMap;
 
     int diskNumber;
+    String discSubtitle;
     String albumTitle;
     String artistTitle;
     String originalYear;

@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -46,6 +47,11 @@ public class DirectoryToMediumConverter implements Converter<DirectoryScope, Med
                 })
                 .forEach((audio) ->
                         albumYearMap.put(audio.getAlbumTitle(), audio.getYear()));
+
+        final String discSubtitle = audioList.stream()
+                .flatMap(a -> Stream.of(a.getDiscSubtitle()))
+                .findFirst()
+                .orElse("");
 
         final List<String> labelList = audioList.stream()
                 .flatMap(mp3FileScope ->
@@ -90,6 +96,7 @@ public class DirectoryToMediumConverter implements Converter<DirectoryScope, Med
                 .isVA(isVA)
                 .artwork(firstArtwork)
                 .diskNumber(diskNumber.get())
+                .discSubtitle(discSubtitle)
                 .build();
     }
 

@@ -31,10 +31,14 @@ public class DirectoryScope {
 
     public DirectoryScope(List<Mp3FileScope> listOfAudios,
                           List<File> listOfImages,
-                          List<File> listOfOthers) {
+                          List<File> listOfOthers,
+                          File currentDir) {
         this.listOfAudios = listOfAudios;
         this.listOfImages = listOfImages;
         this.listOfOthers = listOfOthers;
+        this.currentDir = currentDir;
+        this.children = new ArrayList<>();
+        this.listOfSubFolders = new ArrayList<>();
     }
 
     public boolean hasAudio() {

@@ -2,6 +2,7 @@ package com.scwot.renamer.core.converter;
 
 import com.scwot.renamer.core.scope.Mp3FileScope;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.audio.AudioFile;
@@ -42,7 +43,8 @@ public class SystemAudioFileToMp3WrapperConverter implements Converter<File, Mp3
 
     @Override
     public Mp3FileScope convert(File input) {
-        var audioFile = (MP3File) read(input);
+        AudioFile read = read(input);
+        MP3File audioFile = (MP3File) read;
         ensureID3v24TagExists(audioFile);
         return readTags(audioFile);
     }
@@ -65,10 +67,10 @@ public class SystemAudioFileToMp3WrapperConverter implements Converter<File, Mp3
 
         var labels = Arrays.asList(splitString(fromTag(audioFile, FieldKey.RECORD_LABEL, EMPTY)));
 
-        //var trackCount = String.valueOf(trackCount);
         var trackTitle = fromTag(audioFile, FieldKey.TITLE, UNKNOWN_VALUE);
         var trackNumber = fromTag(audioFile, FieldKey.TRACK, "000");
         var discNumber = discNumberValue(audioFile);
+        var discSubtitle = fromTag(audioFile, FieldKey.DISC_SUBTITLE, EMPTY);
 
         var format = fromCustomTag(audioFile, MEDIATYPE_TAG_NAME, EMPTY);
 
@@ -84,6 +86,8 @@ public class SystemAudioFileToMp3WrapperConverter implements Converter<File, Mp3
         var artwork = fetchArtwork(audioFile);
 
         return Mp3FileScope.builder()
+                .audioFile(audioFile)
+                .fileName(FilenameUtils.getBaseName(audioFile.getFile().getName()))
                 .length(audioDataLength)
                 .artistTitle(artistTitle)
                 .albumTitle(albumTitle)
@@ -103,6 +107,7 @@ public class SystemAudioFileToMp3WrapperConverter implements Converter<File, Mp3
                 .year(year)
                 .origYear(origYear)
                 .discNumber(discNumber)
+                .discSubtitle(discSubtitle)
                 .genres(genres)
                 .artists(artists)
                 .hasArtwork(hasArtwork)
@@ -185,6 +190,10 @@ public class SystemAudioFileToMp3WrapperConverter implements Converter<File, Mp3
     private static String origYearValue(MP3File audioFile, FieldKey fieldKey, String defaultValue) {
         final String value = boundedFromTag(audioFile, fieldKey, defaultValue).substring(0, 4);
         final String origYear = fromCustomTag(audioFile, ORIGINALYEAR_TAG_NAME, defaultValue);
+
+        if (StringUtils.isBlank(origYear)) {
+            return defaultValue;
+        }
 
         if (StringUtils.isNotEmpty(value) && (Integer.parseInt(value) > Integer.parseInt(origYear))) {
             return origYear;

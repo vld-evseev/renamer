@@ -1,4 +1,4 @@
-package com.scwot.renamer.core.utils.enums;
+package com.scwot.renamer.core.enums;
 
 public enum Country {
 
@@ -78,7 +78,7 @@ public enum Country {
     private final String full;
     private final String abbr;
 
-    private Country(String full, String abbr) {
+    Country(String full, String abbr) {
         this.full = full;
         this.abbr = abbr;
     }

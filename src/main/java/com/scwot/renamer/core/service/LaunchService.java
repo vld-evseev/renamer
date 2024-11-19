@@ -40,12 +40,6 @@ public class LaunchService {
                 }
             });
         }
-
-        /*for (Path dir : candidates) {
-            final ReleaseScope releaseScope = importService.runImport(dir.toFile());
-            System.out.println();
-            exportService.export(releaseScope, includeInArtistFolder);
-        }*/
     }
 
 }
