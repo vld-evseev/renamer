@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Slf4j
@@ -125,8 +126,16 @@ public class SystemAudioFileToMp3WrapperConverter implements Converter<File, Mp3
     }
 
     private static List<String> listFromTag(MP3File audioFile, FieldKey fieldKey) {
+        List<String> genres = audioFile.getTag().getAll(fieldKey);
+        if (genres.isEmpty()) {
+            return List.of();
+        }
+        if (genres.size() > 1) {
+            return genres;
+        }
+
         List<String> resultList = new ArrayList<>();
-        String[] resultSplitArray = splitString(audioFile.getTag().getFirst(fieldKey));
+        String[] resultSplitArray = splitString(genres.getFirst());
         if (ArrayUtils.isEmpty(resultSplitArray)) {
             return Collections.emptyList();
         }
@@ -188,27 +197,43 @@ public class SystemAudioFileToMp3WrapperConverter implements Converter<File, Mp3
     }
 
     private static String origYearValue(MP3File audioFile, FieldKey fieldKey, String defaultValue) {
-        final String value = boundedFromTag(audioFile, fieldKey, defaultValue).substring(0, 4);
-        final String origYear = fromCustomTag(audioFile, ORIGINALYEAR_TAG_NAME, defaultValue);
+        try {
+            final String value = boundedFromTag(audioFile, fieldKey, defaultValue);
+            if (isBlank(value)) {
+                return defaultValue;
+            }
 
-        if (StringUtils.isBlank(origYear)) {
-            return defaultValue;
+            final String yearValue = value.substring(0, 4);
+            final String origYear = fromCustomTag(audioFile, ORIGINALYEAR_TAG_NAME, defaultValue);
+
+            if (StringUtils.isBlank(origYear)) {
+                return defaultValue;
+            }
+
+            if (StringUtils.isNotEmpty(yearValue) && (Integer.parseInt(yearValue) > Integer.parseInt(origYear))) {
+                return origYear;
+            }
+
+            return yearValue;
+        } catch (Exception ex) {
+            log.error("Exception for file - " + audioFile.getFile().getName());
+            throw new RuntimeException(ex);
         }
-
-        if (StringUtils.isNotEmpty(value) && (Integer.parseInt(value) > Integer.parseInt(origYear))) {
-            return origYear;
-        }
-
-        return value;
     }
 
     private static String fromTag(MP3File audioFile, FieldKey fieldKey, String defaultValue) {
-        final String tagValue = fromAudio(audioFile, fieldKey);
-        if (isNotEmpty(tagValue)) {
-            return tagValue;
+        try {
+            final String tagValue = fromAudio(audioFile, fieldKey);
+            if (isNotEmpty(tagValue)) {
+                return tagValue;
+            }
+
+            return defaultValue;
+        } catch (Exception ex) {
+            log.error("Exception for file - " + audioFile.getFile().getName());
+            throw new RuntimeException(ex);
         }
 
-        return defaultValue;
     }
 
     private static String fromAudio(MP3File audioFile, FieldKey fieldKey) {

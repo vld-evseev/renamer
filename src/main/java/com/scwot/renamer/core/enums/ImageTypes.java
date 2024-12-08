@@ -14,6 +14,12 @@ public enum ImageTypes {
         }
     },
 
+    TIFF {
+        public String toString() {
+            return "image/tiff";
+        }
+    },
+
     GIF {
         public String toString() {
             return "image/gif";

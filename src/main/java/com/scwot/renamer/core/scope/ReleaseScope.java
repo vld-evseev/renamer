@@ -15,6 +15,7 @@ public class ReleaseScope {
 
     private List<MediumScope> mediumScopeList;
     private boolean isVA;
+    private boolean isMultiCD;
     private String artistCountry;
     private List<String> topArtistGenres;
 
@@ -38,7 +39,7 @@ public class ReleaseScope {
 
     private String barcode;
 
-    private byte[] image;
+    private Artwork embeddedArtwork;
 
     private int totalDiskNumber;
 

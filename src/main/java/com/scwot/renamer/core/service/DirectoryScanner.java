@@ -9,13 +9,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO: redesign logic to scan file tags at first.
+//       If they don't have information about folder structure,
+//       then look at the directories
 @Service
 public class DirectoryScanner {
 

@@ -29,6 +29,7 @@ public class SystemDirToDirectoryWrapperConverter implements Converter<File, Dir
 
         Arrays.stream(dir.listFiles())
                 .filter(file -> !file.isDirectory())
+                .filter(file -> !file.getName().startsWith("."))
                 .filter(file -> !file.getName().contains(HTOA_FILE))
                 .forEach(file -> {
                     if (FileHelper.isAudioFile(file)) {

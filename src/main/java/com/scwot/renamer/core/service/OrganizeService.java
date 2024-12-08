@@ -1,6 +1,9 @@
 package com.scwot.renamer.core.service;
 
+import com.scwot.renamer.core.scope.Artwork;
 import com.scwot.renamer.core.scope.DirectoryScope;
+import com.scwot.renamer.core.scope.MediumScope;
+import com.scwot.renamer.core.scope.ReleaseScope;
 import com.scwot.renamer.core.utils.ExportFileHelper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,36 +22,49 @@ public class OrganizeService {
     private static final String COVERS_NAME = "Covers";
 
 
-    public void organizeData(DirectoryScope dirScope, File dest, boolean isVA) {
-        organizeAudio(dirScope, dest, isVA);
-        organizeImages(dirScope, dest);
+    public void organizeData(ReleaseScope releaseScope,
+                             MediumScope mediumScope,
+                             DirectoryScope dirScope,
+                             File dest,
+                             boolean va,
+                             boolean multiCD) {
+        organizeAudio(dirScope, dest, va, multiCD);
+        organizeImages(releaseScope, mediumScope, dirScope, dest);
         organizeOthers(dirScope, dest);
     }
 
-    public void batchOrganize(List<DirectoryScope> directoryScopes, File destination) {
+    public void batchOrganize(ReleaseScope releaseScope,
+                              MediumScope mediumScope,
+                              List<DirectoryScope> directoryScopes, File destination) {
         directoryScopes.forEach(scope -> {
-            organizeImages(scope, destination);
+            organizeImages(releaseScope, mediumScope, scope, destination);
             organizeOthers(scope, destination);
         });
     }
 
-    public void organizeAudio(DirectoryScope dirScope, File destination, boolean isVA) {
+    public void organizeAudio(DirectoryScope dirScope, File destination, boolean va, boolean multiCD) {
         if (dirScope.hasAudio()) {
             dirScope.getListOfAudios().forEach(audio -> {
-                File target = ExportFileHelper.updateNameIfNeeded(audio, destination, isVA);
+                File target = ExportFileHelper.updateNameIfNeeded(audio, destination, va, multiCD);
                 ExportFileHelper.move(audio.getAudioFile().getFile(), target);
             });
         }
     }
 
-    public void organizeImages(DirectoryScope dirScope, File destination) {
+    public void organizeImages(ReleaseScope releaseScope,
+                               MediumScope mediumScope,
+                               DirectoryScope dirScope,
+                               File destination) {
         if (!dirScope.hasImages()) {
             return;
         }
 
         List<File> images = dirScope.getListOfImages();
 
-        if (hasUnrenamedFolderImage(dirScope, images)) {
+        Artwork embeddedImage = releaseScope.getEmbeddedArtwork();
+        Artwork folderArtwork = mediumScope == null ? null : mediumScope.getFolderArtwork();
+
+        if (hasUnrenamedFolderImage(dirScope, images) && fileBasedArtworkIsSmaller(folderArtwork, embeddedImage)) {
             moveAndRenameFolderImage(destination, images);
             return;
         }
@@ -66,6 +82,7 @@ public class OrganizeService {
             return;
         }
 
+        // folder contains audio files and a bunch of images together
         if (images.size() > 1 && dirScope.hasAudio()) {
             File coversFolder = new File(destination, COVERS_NAME);
             if (coversFolder.mkdir()) {
@@ -74,12 +91,47 @@ public class OrganizeService {
                     File target = baseName.equalsIgnoreCase("cover") || baseName.equalsIgnoreCase("folder")
                             ? new File(coversFolder.getParent(), FOLDER_NAME + EXTENSION_SEPARATOR + getExtension(image.getName()))
                             : new File(coversFolder, image.getName());
-                    image.renameTo(target);
+                    ExportFileHelper.move(image, target);
                 });
             }
-        } else {
+        // folder contains audio files and a single image
+        } else if (images.size() == 1 && dirScope.hasAudio()) {
+            // if image in folder has greater resolution than image embedded in file then
+            // move the first image to a separate folder
+            if (hasSmallerResolution(embeddedImage, folderArtwork)) {
+                File coversFolder = new File(destination, COVERS_NAME);
+                File target = new File(
+                        coversFolder,
+                        images.getFirst().getName());
+                ExportFileHelper.move(images.getFirst(), target);
+            }
+        }
+        // folder contains only images
+        else {
             images.forEach(image -> ExportFileHelper.move(image, destination));
         }
+    }
+
+    private boolean fileBasedArtworkIsSmaller(Artwork folderArtwork, Artwork embeddedImage) {
+        if (folderArtwork == null) {
+            return false;
+        }
+
+        if (embeddedImage == null) {
+            return true;
+        }
+
+        if (hasSmallerResolution(folderArtwork, embeddedImage)) return true;
+
+        return folderArtwork.raw().length <= embeddedImage.raw().length;
+    }
+
+    private static boolean hasSmallerResolution(Artwork first, Artwork second) {
+        if (first == null) return false;
+        if (second == null) return false;
+
+        return first.height() <= second.height() &&
+                first.width() <= second.width();
     }
 
     public void organizeOthers(DirectoryScope directoryScope, File destination) {
@@ -126,9 +178,8 @@ public class OrganizeService {
     private void moveToCoversDir(File dest, List<File> imageFiles) {
         if (!imageFiles.isEmpty()) {
             var coversDir = new File(dest, COVERS_NAME);
-            if (coversDir.mkdir()) {
-                imageFiles.forEach(image -> ExportFileHelper.move(image, coversDir));
-            }
+            coversDir.mkdir();
+            imageFiles.forEach(image -> ExportFileHelper.move(image, coversDir));
         }
     }
 

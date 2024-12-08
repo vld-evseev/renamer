@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.io.FilenameUtils.getExtension;
-
 @Slf4j
 public class ExportFileHelper {
 
@@ -33,15 +31,15 @@ public class ExportFileHelper {
                     "fpl",
                     "nfo",
                     "ds_store",
-                    "auCDtect",
+                    "aucdtect",
                     "accurip",
                     "summary"
             );
 
     private static final List<String> FILE_BASE_NAMES_RESTRICTED =
             List.of(
-                    ".ds_store",
                     "folder.aucdtect",
+                    ".ds_store",
                     "foo_dr"
             );
 
@@ -69,7 +67,7 @@ public class ExportFileHelper {
         }
     }
 
-    public static File updateNameIfNeeded(Mp3FileScope audio, File dest, boolean isVA) {
+    public static File updateNameIfNeeded(Mp3FileScope audio, File dest, boolean isVA, boolean multiCD) {
         String baseName = FilenameUtils.getBaseName(audio.getAudioFile().getFile().getName());
         Pattern pattern = isVA ? VA_PATTERN : COMMON_PATTERN;
         Matcher matcher = pattern.matcher(baseName);
@@ -79,7 +77,10 @@ public class ExportFileHelper {
         }
 
         String trackNumber = String.format("%02d", Integer.parseInt(audio.getTrackNumber()));
-        StringBuilder modifiedName = new StringBuilder(trackNumber).append(" - ");
+        String cdNumber = multiCD ? audio.getDiscNumber() + "-" : "";
+
+        StringBuilder modifiedName = new StringBuilder(cdNumber);
+        modifiedName.append(trackNumber).append(" - ");
 
         if (isVA) {
             modifiedName.append(ExportRenameUtils.normalizeName(audio.getArtistTitle())).append(" - ");
@@ -96,13 +97,13 @@ public class ExportFileHelper {
     public static void removeJunkFiles(List<File> listOfOtherFiles) {
         listOfOtherFiles.removeIf(file -> {
             String name = file.getName().toLowerCase();
-            String extension = getExtension(name);
-            String basename = FilenameUtils.getBaseName(name);
+            String extension = FilenameUtils.getExtension(name).toLowerCase();
+            String basename = FilenameUtils.getBaseName(name).toLowerCase();
 
             if (EXTENSIONS_RESTRICTED.contains(extension)
                     || FILE_BASE_NAMES_RESTRICTED.contains(basename)
                     || FILE_FULL_NAMES_RESTRICTED.contains(name)) {
-                file.delete();
+                //file.delete();
                 return true;
             }
             return false;

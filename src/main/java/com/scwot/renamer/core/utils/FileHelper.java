@@ -9,8 +9,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 
 public class FileHelper {
+
+    private final static List<String> AUDIO_TYPES =
+            List.of(
+                    AudioTypes.MPEG.toString(),
+                    AudioTypes.MP3.toString()
+            );
 
     public static boolean isAudioFile(File file) {
         final String mimeType = getMimeType(file);
@@ -26,13 +33,17 @@ public class FileHelper {
 
     public static boolean isMP3(File file) {
         final String mimeType = getMimeType(file);
-        return file.isFile() && AudioTypes.MP3.toString().equals(mimeType);
+        return file.isFile() && AUDIO_TYPES.contains(mimeType);
     }
 
     public static boolean isMP3(Path path) {
         var file = path.toFile();
         final String mimeType = getMimeType(file);
-        return file.isFile() && AudioTypes.MP3.toString().equals(mimeType);
+        if (mimeType == null) {
+            return false;
+        }
+
+        return file.isFile() && AUDIO_TYPES.contains(mimeType);
     }
 
     @SneakyThrows(IOException.class)

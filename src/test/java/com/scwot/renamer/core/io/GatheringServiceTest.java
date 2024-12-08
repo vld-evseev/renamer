@@ -4,6 +4,7 @@ import com.scwot.renamer.ResourceProvider;
 import com.scwot.renamer.core.converter.DirectoryToMediumConverter;
 import com.scwot.renamer.core.converter.SystemAudioFileToMp3WrapperConverter;
 import com.scwot.renamer.core.converter.SystemDirToDirectoryWrapperConverter;
+import com.scwot.renamer.core.converter.ToArtworkConverter;
 import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.service.GatheringService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ class GatheringServiceTest {
     @BeforeEach
     void setUp() {
         underTest = new GatheringService(
-                new DirectoryToMediumConverter(),
+                new DirectoryToMediumConverter(new ToArtworkConverter()),
                 new SystemDirToDirectoryWrapperConverter(
                         new SystemAudioFileToMp3WrapperConverter()
                 ));

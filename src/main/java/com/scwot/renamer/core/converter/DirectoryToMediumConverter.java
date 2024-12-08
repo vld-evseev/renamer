@@ -1,5 +1,6 @@
 package com.scwot.renamer.core.converter;
 
+import com.scwot.renamer.core.scope.Artwork;
 import com.scwot.renamer.core.scope.DirectoryScope;
 import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.Mp3FileScope;
@@ -17,7 +18,13 @@ import java.util.stream.Stream;
 @Component
 public class DirectoryToMediumConverter implements Converter<DirectoryScope, MediumScope> {
 
+    private final ToArtworkConverter toArtworkConverter;
+
     private final String VA_VALUE = "Various Artists";
+
+    public DirectoryToMediumConverter(ToArtworkConverter toArtworkConverter) {
+        this.toArtworkConverter = toArtworkConverter;
+    }
 
     public MediumScope convert(DirectoryScope directoryScope) {
         final List<Mp3FileScope> audioList = directoryScope.getListOfAudios();
@@ -73,7 +80,9 @@ public class DirectoryToMediumConverter implements Converter<DirectoryScope, Med
 
         final boolean isVA = albumTitle.equalsIgnoreCase(VA_VALUE);
 
-        final File firstArtwork = directoryScope.getListOfImages().stream().findFirst().orElse(null);
+        final File folderArtworkFile =
+                directoryScope.getListOfImages().size() == 1 ? directoryScope.getListOfImages().getFirst() : null;
+        Artwork folderArtwork = toArtworkConverter.fromFile(folderArtworkFile);
 
         sortByTrackNumbers(audioList);
 
@@ -94,7 +103,7 @@ public class DirectoryToMediumConverter implements Converter<DirectoryScope, Med
                 .labelList(labelList)
                 .catNumList(catNumList)
                 .isVA(isVA)
-                .artwork(firstArtwork)
+                .folderArtwork(folderArtwork)
                 .diskNumber(diskNumber.get())
                 .discSubtitle(discSubtitle)
                 .build();

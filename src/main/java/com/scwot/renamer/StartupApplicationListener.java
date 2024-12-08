@@ -22,7 +22,7 @@ public class StartupApplicationListener {
         this.launchService = launchService;
     }
 
-    @EventListener
+    //@EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
         File dir = new File(input);
 
@@ -33,5 +33,4 @@ public class StartupApplicationListener {
             log.info(dir.getAbsolutePath() + " doesn't exists");
         }
     }
-
 }

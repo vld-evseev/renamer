@@ -7,10 +7,8 @@ logging:
     file: "%d %p %c{1.} [%t] %m%n"
 
 app:
-  input: "/private/tmp/com.drbuho.disktool.BuhoNTFS/7A1AA0111A9FC911/BLACK/!to-rename/!ready-test"
-  destination: "/private/tmp/com.drbuho.disktool.BuhoNTFS/7A1AA0111A9FC911/BLACK/!renamed"
-  # input: "/Users/user/.mounty/BLACK/!to-rename/!ready-test"
-  # destination: "/Users/user/.mounty/BLACK/!renamed"
+  input: "/Volumes/BLACK/- to-rename/!ready-test"
+  destination: "/Volumes/BLACK/- renamed"
 
 server:
   port: 8080

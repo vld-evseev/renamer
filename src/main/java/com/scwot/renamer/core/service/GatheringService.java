@@ -17,6 +17,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -59,16 +60,17 @@ public class GatheringService {
 
     private List<MediumScope> processDirectories(List<Path> directories) {
         List<MediumScope> mediumScopeList = new ArrayList<>();
-        var rootScope = directories.isEmpty() ? null :
-                setupRootScope(
-                        systemDirToDirectoryWrapperConverter.convert(directories.getFirst().toFile())
-                );
+        final AtomicReference<DirectoryScope> root = new AtomicReference<>();
 
         directories.forEach(dir -> {
             DirectoryScope currentDirScope = systemDirToDirectoryWrapperConverter.convert(dir.toFile());
-            if (rootScope != null && currentDirScope != rootScope) {
-                currentDirScope.setRoot(rootScope);
-                rootScope.addChild(currentDirScope);
+            if (root.get() == null) {
+                root.set(currentDirScope);
+            }
+
+            if (root.get() != null && currentDirScope != root.get()) {
+                currentDirScope.setRoot(root.get());
+                root.get().addChild(currentDirScope);
             }
 
             if (currentDirScope.hasAudio()) {

@@ -1,5 +1,6 @@
 package com.scwot.renamer.core.utils;
 
+import com.scwot.renamer.core.scope.Artwork;
 import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
@@ -12,9 +13,12 @@ public class ImageHelper {
 
 
     @SneakyThrows
-    public static void saveImage(byte[] imageData, File dest) {
+    public static void saveImage(Artwork artwork, File dest) {
         // Convert byte[] to BufferedImage
-        ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+        if (artwork == null) {
+            return;
+        }
+        ByteArrayInputStream bais = new ByteArrayInputStream(artwork.raw());
         BufferedImage bufferedImage = ImageIO.read(bais);
 
         // Identify the image format by reading the format from the byte array

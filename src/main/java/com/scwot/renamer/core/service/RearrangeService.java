@@ -1,5 +1,6 @@
 package com.scwot.renamer.core.service;
 
+import com.scwot.renamer.core.scope.Artwork;
 import com.scwot.renamer.core.scope.DirectoryScope;
 import com.scwot.renamer.core.scope.MediumScope;
 import com.scwot.renamer.core.scope.ReleaseScope;
@@ -31,28 +32,32 @@ public class RearrangeService {
         }
 
         boolean va = releaseScope.isVA();
-        final File newAlbumDirectory = createTopLevelDir(releaseScope, destination, includeInArtistFolder);
+        boolean multiCD = releaseScope.isMultiCD();
+        final File newAlbumDir = createTopLevelDir(releaseScope, destination, includeInArtistFolder);
 
         final List<MediumScope> mediumScopeList = releaseScope.getMediumScopeList();
         for (MediumScope mediumScope : mediumScopeList) {
 
+            Artwork embeddedArtwork = releaseScope.getEmbeddedArtwork();
+            DirectoryScope from = mediumScope.getDirectoryScope();
             if (releaseScope.getTotalDiskNumber() > 1) {
                 var discSubtitle = mediumScope.getDiscSubtitle();
                 var subtitle = discSubtitle.isEmpty() ? "" : " - " +
                         ExportRenameUtils.trimTitle(ExportRenameUtils.normalizeName(discSubtitle), 60);
-                var cdDirectory = new File(
-                        newAlbumDirectory + File.separator +
+                var cdDir = new File(
+                        newAlbumDir + File.separator +
                                 "CD" + mediumScope.getDiskNumber() + subtitle
                 );
-                cdDirectory.mkdir();
-                organizeData.organizeData(mediumScope.getDirectoryScope(), cdDirectory, va);
-                ImageHelper.saveImage(releaseScope.getImage(), cdDirectory);
-            } else {
-                organizeData.organizeData(mediumScope.getDirectoryScope(), newAlbumDirectory, va);
-                ImageHelper.saveImage(releaseScope.getImage(), newAlbumDirectory);
+                cdDir.mkdir();
+                organizeData.organizeData(releaseScope, mediumScope, mediumScope.getDirectoryScope(), cdDir, va, multiCD);
 
-                for (DirectoryScope child : mediumScope.getDirectoryScope().getChildren()) {
-                    organizeData.organizeData(child, newAlbumDirectory, va);
+                ImageHelper.saveImage(embeddedArtwork, cdDir);
+            } else {
+                organizeData.organizeData(releaseScope, mediumScope, from, newAlbumDir, va, multiCD);
+                ImageHelper.saveImage(embeddedArtwork, newAlbumDir);
+
+                for (DirectoryScope child : from.getChildren()) {
+                    organizeData.organizeData(releaseScope, mediumScope, child, newAlbumDir, va, multiCD);
                 }
             }
         }
@@ -63,7 +68,7 @@ public class RearrangeService {
                     root.getChildren().stream()
                             .filter(Predicate.not(DirectoryScope::hasAudio))
                             .collect(Collectors.toList());
-            organizeData.batchOrganize(remaining, newAlbumDirectory);
+            organizeData.batchOrganize(releaseScope, null, remaining, newAlbumDir);
         }
     }
 

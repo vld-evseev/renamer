@@ -1,6 +1,7 @@
 package com.scwot.renamer.core.converter;
 
 
+import com.scwot.renamer.core.scope.Artwork;
 import com.scwot.renamer.core.service.MBService;
 import com.scwot.renamer.core.scope.DirectoryScope;
 import com.scwot.renamer.core.scope.MediumScope;
@@ -31,9 +32,11 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 public class MediumsToReleaseConverter implements Converter<List<MediumScope>, ReleaseScope>{
 
     private final MBService mbService;
+    private final ToArtworkConverter toArtworkConverter;
 
-    public MediumsToReleaseConverter(MBService mbService) {
+    public MediumsToReleaseConverter(MBService mbService, ToArtworkConverter toArtworkConverter) {
         this.mbService = mbService;
+        this.toArtworkConverter = toArtworkConverter;
     }
 
     public ReleaseScope convert(List<MediumScope> mediumScopeList) {
@@ -68,6 +71,10 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
 
         final Map<String, String> catalogues = extractCatalogues(labels, catNums);
         final boolean isVA = mediumScopeList.getFirst().isVA();
+        final boolean isMultiCD = mergedAudioList.stream()
+                .map(Mp3FileScope::getDiscNumber)
+                .distinct()
+                .count() > 1;
 
         final String albumArtist = mergedAudioList.stream()
                 .flatMap(a -> Stream.of(a.getAlbumArtistTitle()))
@@ -97,7 +104,8 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
         final String barcode = mergedAudioList.stream()
                 .flatMap(a -> Stream.of(a.getBarcode())).findFirst().orElse(null);
 
-        byte[] firstImage = getFirstCoverIfPresent(mergedAudioList);
+        byte[] firstImage = getFirstImageIfPresent(mergedAudioList);
+        Artwork embeddedArtwork = toArtworkConverter.fromBytes(firstImage);
 
         final String yearReleased = Collections.max(years);
         final String yearRecorded = Collections.min(years);
@@ -111,6 +119,7 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
                 .root(rootScope)
                 .catalogues(catalogues)
                 .isVA(isVA)
+                .isMultiCD(isMultiCD)
                 .albumArtist(albumArtist)
                 .albumArtistSort(albumArtistSort)
                 .albumTitle(albumTitle)
@@ -120,7 +129,7 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
                 .releaseMBID(releaseMBID)
                 .releaseGroupMBID(releaseGroupMBID)
                 .barcode(barcode)
-                .image(firstImage)
+                .embeddedArtwork(embeddedArtwork)
                 .yearReleased(yearReleased)
                 .yearRecorded(yearRecorded)
                 .totalDiskNumber(mediumScopeList.size())
@@ -132,7 +141,7 @@ public class MediumsToReleaseConverter implements Converter<List<MediumScope>, R
                 .build();
     }
 
-    private byte[] getFirstCoverIfPresent(List<Mp3FileScope> mergedAudioList) {
+    private byte[] getFirstImageIfPresent(List<Mp3FileScope> mergedAudioList) {
         return mergedAudioList.stream()
                 .map(Mp3FileScope::getImage)
                 .filter(Objects::nonNull)

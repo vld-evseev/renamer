@@ -50,9 +50,21 @@ class ExportFileHelperTest {
         when(commonMp3FileScope.getTrackNumber()).thenReturn("1");
         when(commonMp3FileScope.getTrackTitle()).thenReturn("title");
 
-        File file = ExportFileHelper.updateNameIfNeeded(commonMp3FileScope, DEST, false);
+        File file = ExportFileHelper.updateNameIfNeeded(commonMp3FileScope, DEST, false, false);
 
         assertEquals("/dest/01 - title.mp3", file.getPath());
+    }
+
+    @Test
+    void updateCommon_multiCD_ok() {
+        when(commonAudioFile.getName()).thenReturn("/in/title.mp3");
+        when(commonMp3FileScope.getTrackNumber()).thenReturn("1");
+        when(commonMp3FileScope.getTrackTitle()).thenReturn("title");
+        when(commonMp3FileScope.getDiscNumber()).thenReturn(1);
+
+        File file = ExportFileHelper.updateNameIfNeeded(commonMp3FileScope, DEST, false, true);
+
+        assertEquals("/dest/1-01 - title.mp3", file.getPath());
     }
 
     @Test
@@ -61,7 +73,7 @@ class ExportFileHelperTest {
         when(commonMp3FileScope.getTrackNumber()).thenReturn("1");
         when(commonMp3FileScope.getTrackTitle()).thenReturn("title");
 
-        File file = ExportFileHelper.updateNameIfNeeded(commonMp3FileScope, DEST,false);
+        File file = ExportFileHelper.updateNameIfNeeded(commonMp3FileScope, DEST,false, false);
 
         assertEquals("/dest/01 - title.mp3", file.getPath());
     }
@@ -70,10 +82,10 @@ class ExportFileHelperTest {
     void updateVAMissingPattern() {
         when(vaAudioFile.getName()).thenReturn("/in/1 - title.mp3");
         when(vaMp3FileScope.getTrackNumber()).thenReturn("1");
-        when(vaMp3FileScope.getAlbumArtistTitle()).thenReturn("Artist");
+        when(vaMp3FileScope.getArtistTitle()).thenReturn("Artist");
         when(vaMp3FileScope.getTrackTitle()).thenReturn("title");
 
-        File file = ExportFileHelper.updateNameIfNeeded(vaMp3FileScope, DEST,true);
+        File file = ExportFileHelper.updateNameIfNeeded(vaMp3FileScope, DEST,true, false);
 
         assertEquals("/dest/01 - Artist - title.mp3", file.getPath());
     }
@@ -82,10 +94,10 @@ class ExportFileHelperTest {
     void updateVA_invalidPattern() {
         when(vaAudioFile.getName()).thenReturn("/in/1 - title - extra.mp3");
         when(vaMp3FileScope.getTrackNumber()).thenReturn("1");
-        when(vaMp3FileScope.getAlbumArtistTitle()).thenReturn("Artist");
+        when(vaMp3FileScope.getArtistTitle()).thenReturn("Artist");
         when(vaMp3FileScope.getTrackTitle()).thenReturn("title");
 
-        File file = ExportFileHelper.updateNameIfNeeded(vaMp3FileScope, DEST,true);
+        File file = ExportFileHelper.updateNameIfNeeded(vaMp3FileScope, DEST,true, false);
 
         assertEquals("/dest/01 - Artist - title.mp3", file.getPath());
     }
@@ -96,7 +108,7 @@ class ExportFileHelperTest {
         when(commonMp3FileScope.getTrackNumber()).thenReturn("1");
         when(commonMp3FileScope.getTrackTitle()).thenReturn("title");
 
-        File file = ExportFileHelper.updateNameIfNeeded(commonMp3FileScope, DEST,false);
+        File file = ExportFileHelper.updateNameIfNeeded(commonMp3FileScope, DEST,false, false);
 
         assertEquals("/dest/01 - title.mp3", file.getPath());
     }
@@ -105,10 +117,10 @@ class ExportFileHelperTest {
     void updateVANoChangesForValidPattern() {
         when(vaAudioFile.getName()).thenReturn("/in/01 - Artist - title.mp3");
         when(vaMp3FileScope.getTrackNumber()).thenReturn("1");
-        when(vaMp3FileScope.getAlbumArtistTitle()).thenReturn("Artist");
+        when(vaMp3FileScope.getArtistTitle()).thenReturn("Artist");
         when(vaMp3FileScope.getTrackTitle()).thenReturn("title");
 
-        File file = ExportFileHelper.updateNameIfNeeded(vaMp3FileScope, DEST,true);
+        File file = ExportFileHelper.updateNameIfNeeded(vaMp3FileScope, DEST,true, false);
 
         assertEquals("/dest/01 - Artist - title.mp3", file.getPath());
     }

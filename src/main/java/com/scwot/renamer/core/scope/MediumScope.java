@@ -3,7 +3,6 @@ package com.scwot.renamer.core.scope;
 import lombok.Builder;
 import lombok.Value;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -29,7 +28,7 @@ public class MediumScope {
     String releasedYear;
     List<String> labelList;
     List<String> catNumList;
-    File artwork;
+    Artwork folderArtwork;
     boolean isVA;
 
 }
